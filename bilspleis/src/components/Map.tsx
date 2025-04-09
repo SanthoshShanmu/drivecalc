@@ -23,6 +23,17 @@ export default function Map({ routeGeometry, origin, destination, tollStations =
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
+  
+  // Detect dark mode
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    setDarkMode(mediaQuery.matches);
+    
+    const handleChange = (e: MediaQueryListEvent) => setDarkMode(e.matches);
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
   
   // Initialize map
   useEffect(() => {
@@ -30,7 +41,9 @@ export default function Map({ routeGeometry, origin, destination, tollStations =
     
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/streets-v11',
+      style: darkMode 
+        ? 'mapbox://styles/mapbox/dark-v10' 
+        : 'mapbox://styles/mapbox/streets-v11',
       center: [10.7522, 59.9139], // Default to Oslo
       zoom: 10
     });
@@ -51,7 +64,17 @@ export default function Map({ routeGeometry, origin, destination, tollStations =
         map.current = null;
       }
     };
-  }, []);
+  }, [darkMode]);
+  
+  // Change map style when dark mode changes
+  useEffect(() => {
+    if (map.current && mapLoaded) {
+      map.current.setStyle(darkMode 
+        ? 'mapbox://styles/mapbox/dark-v10' 
+        : 'mapbox://styles/mapbox/streets-v11'
+      );
+    }
+  }, [darkMode, mapLoaded]);
   
   // Add route when geometry, origin, destination are available and map is loaded
   useEffect(() => {
@@ -90,7 +113,7 @@ export default function Map({ routeGeometry, origin, destination, tollStations =
             'line-cap': 'round'
           },
           paint: {
-            'line-color': '#0070f3',
+            'line-color': darkMode ? '#3291ff' : '#0070f3',
             'line-width': 6
           }
         });
@@ -142,7 +165,7 @@ export default function Map({ routeGeometry, origin, destination, tollStations =
       padding: 50,
       maxZoom: 15
     });
-  }, [routeGeometry, origin, destination, tollStations, mapLoaded]);
+  }, [routeGeometry, origin, destination, tollStations, mapLoaded, darkMode]);
   
   return (
     <div className={styles.mapContainer}>
