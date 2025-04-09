@@ -25,6 +25,7 @@ Bilspleis is a web application that helps you calculate driving costs in Norway.
 
 - Node.js (v18 or newer)
 - A Mapbox API key
+- A Bompengekalkulator API key
 
 ### Installation
 
