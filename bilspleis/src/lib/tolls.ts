@@ -78,7 +78,7 @@ export async function calculateTollFees(
       const tollStations: ApiTollStation[] = route.AvgiftsPunkter || [];
       
       // Calculate total fees
-      let totalFee: number = route.Rabattert || 0; // Use discounted price if available
+      const totalFee: number = route.Rabattert || 0; // Use discounted price if available
       
       // Format toll stations
       const stations: TollStation[] = tollStations.map(station => {

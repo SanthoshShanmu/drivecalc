@@ -51,7 +51,18 @@ export default function CostResults({
         </div>
         <div className={styles.summaryItem}>
           <span className={styles.label}>Estimert kjøretid</span>
-          <span className={styles.value}>{Math.round(routeData.duration / 60)} minutter</span>
+          <span className={styles.value}>
+            {(() => {
+              const duration = routeData.duration; // in seconds
+              if (duration >= 86400) { // 60 * 60 * 24
+                return `${Math.round(duration / 86400)} dager`;
+              } else if (duration >= 3600) {
+                return `${Math.round(duration / 3600)} timer`;
+              } else {
+                return `${Math.round(duration / 60)} minutter`;
+              }
+            })()}
+          </span>
         </div>
         <div className={styles.summaryItem}>
           <span className={styles.label}>Forbruk</span>
