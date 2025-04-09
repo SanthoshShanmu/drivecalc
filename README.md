@@ -1,63 +1,97 @@
-# Bilspleis - Norwegian Trip Cost Calculator
+# Bilspleis - Norwegian Driving Cost Calculator
 
-Bilspleis is a web application that helps users calculate travel costs between locations in Norway. It provides estimates for fuel expenses and toll fees based on the selected route and vehicle type.
+Bilspleis is a web application that helps you calculate driving costs in Norway. It provides accurate estimates for fuel consumption, toll expenses, and total travel costs between locations.
 
 ## Features
 
-- **Route Calculation**: Get precise routes between any two locations in Norway using Mapbox
-- **Vehicle Type Support**: Calculate costs for different vehicle types (car, electric, hybrid, diesel, truck)
-- **Real-time Fuel Costs**: Uses current Norwegian fuel prices scraped from online sources
-- **Toll Fee Calculation**: Estimates toll fees using the DIB Kunnskap Bompenge API
-- **Interactive Map**: Visual representation of your route
-- **Detailed Cost Breakdown**: View a breakdown of distance, duration, fuel costs, and toll fees
-
-## Getting Started
-
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a custom font from Vercel.
-
-## Environment Variables
-
-This project requires the following environment variables:
-
-- `NEXT_PUBLIC_MAPBOX_TOKEN`: Your Mapbox API token for map rendering and route calculations
-- `DIB_API_KEY`: API key for the DIB Kunnskap Bompenge API (toll calculations)
-
-Create a `.env.local` file in the root directory and add these variables.
+- Calculate route distance and duration between any two locations in Norway
+- Display interactive maps with route visualization
+- Calculate fuel costs based on vehicle type and fuel consumption
+- Include toll costs in total travel expenses
+- Support for different vehicle types and fuel options
 
 ## Technology Stack
 
-- **Frontend**: React, Next.js, Tailwind CSS
-- **Maps & Routing**: Mapbox GL JS
-- **APIs**: Mapbox Directions API, DIB Kunnskap Bompenge API
-- **Data Fetching**: Axios, Cheerio (for web scraping)
+- [Next.js 15](https://nextjs.org/) - React framework
+- [React 19](https://react.dev/) - UI library
+- [Mapbox GL](https://www.mapbox.com/) - Interactive maps
+- [Axios](https://axios-http.com/) - HTTP client for API requests
+- [TailwindCSS 4](https://tailwindcss.com/) - CSS framework
+- [TypeScript](https://www.typescriptlang.org/) - Type safety
 
-## Learn More
+## Getting Started
 
-To learn more about Next.js, take a look at the following resources:
+### Prerequisites
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Node.js (v18 or newer)
+- A Mapbox API key
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Installation
 
-## Deploy on Vercel
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/bilspleis.git
+cd bilspleis
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+2. Install dependencies:
+```bash
+npm install
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3. Create a `.env.local` file in the root directory with your Mapbox API key:
+```
+NEXT_PUBLIC_MAPBOX_API_KEY=your_mapbox_api_key
+```
+
+4. Run the development server:
+```bash
+npm run dev
+```
+
+5. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
+
+## Usage
+
+1. Enter your origin and destination locations
+2. Select your vehicle type and fuel type
+3. View the calculated route on the map
+4. See the detailed breakdown of costs including:
+   - Fuel consumption and cost
+   - Toll expenses
+   - Total travel cost
+   - Journey distance and time
+
+## Building for Production
+
+```bash
+npm run build
+npm run start
+```
+
+## Project Structure
+
+```
+bilspleis/
+├── src/
+│   ├── app/          # Next.js app router pages
+│   ├── components/   # React components
+│   │   ├── CostResults.tsx     # Cost calculation display
+│   │   ├── Map.tsx             # Mapbox implementation
+│   │   ├── RouteSelector.tsx   # Origin/destination selector
+│   │   └── VehicleSelector.tsx # Vehicle/fuel type selector
+│   └── lib/          # Utility functions
+│       ├── fuel.ts    # Fuel calculation utilities
+│       ├── mapbox.ts  # Mapbox integration
+│       └── tolls.ts   # Toll calculation utilities
+├── public/           # Static assets
+└── ...configuration files
+```
+
+## License
+
+This project is licensed under the MIT License.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.

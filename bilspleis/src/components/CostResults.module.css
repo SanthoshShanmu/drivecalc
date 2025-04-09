@@ -1,0 +1,125 @@
+.resultsContainer {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.resultsContainer h2 {
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  color: #333;
+  text-align: center;
+}
+
+.summary {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.summaryItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.label {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 0.25rem;
+}
+
+.value {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.costs {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.costItem {
+  padding: 1rem;
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.costHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.costHeader h3 {
+  font-size: 1.1rem;
+  color: #333;
+  margin: 0;
+}
+
+.costAmount {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.costDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.costDetail {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+}
+
+.costDetail:last-child {
+  margin-bottom: 0;
+}
+
+.totalCost {
+  background-color: #f0f7ff;
+  border: 1px solid #cce5ff;
+}
+
+.totalCost .costHeader h3,
+.totalCost .costAmount {
+  color: #0070f3;
+  font-weight: bold;
+}
+
+.tollStationHeader {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #eaeaea;
+  color: #444;
+}
+
+@media (max-width: 768px) {
+  .summary {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  
+  .summaryItem {
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+  }
+}
