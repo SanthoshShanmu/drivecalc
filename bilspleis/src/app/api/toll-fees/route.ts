@@ -8,7 +8,7 @@ const API_KEY = process.env.NEXT_PUBLIC_BOMPENGE_API_KEY;
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    const { waypoints, vehicleType } = data;
+    const { waypoints, vehicleType, isRoundTrip } = data;
     
     if (!waypoints || waypoints.length < 2) {
       return NextResponse.json({ error: 'Need at least origin and destination waypoints' }, { status: 400 });
@@ -86,7 +86,7 @@ export async function POST(request: Request) {
       Litenbiltype: litenbiltype,
       Storbiltype: storbiltype,
       Billengdeunder: "5.9",
-      Retur: "0",
+      Retur: isRoundTrip ? "1" : "0", // Set to 1 for round trip
       Tidsreferanser: "1"
     };
     
@@ -108,33 +108,46 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Error calculating toll fees:', error);
     
+    // Extract isRoundTrip flag from request to use in mock data
+    let isRoundTrip = false;
+    try {
+      const { isRoundTrip: roundTrip } = await request.json();
+      isRoundTrip = roundTrip;
+    } catch {
+      // If we can't extract it, default to false
+    }
+    
     // For development, return mock data
     return NextResponse.json({
       Tur: [
         {
           Name: "Oslo - Gardermoen",
-          DistanseNice: "46 km",
-          TidNice: "43 min",
-          KostnadNice: "63,00 kr.",
-          RabattertNice: "56,70 kr.",
-          Kostnad: 63.0,
-          Rabattert: 56.7,
+          DistanseNice: isRoundTrip ? "92 km" : "46 km",
+          TidNice: isRoundTrip ? "86 min" : "43 min",
+          KostnadNice: isRoundTrip ? "126,00 kr." : "63,00 kr.",
+          RabattertNice: isRoundTrip ? "113,40 kr." : "56,70 kr.",
+          Kostnad: isRoundTrip ? 126.0 : 63.0,
+          Rabattert: isRoundTrip ? 113.4 : 56.7,
           AvgiftsPunkter: [
             {
               Navn: "Oslo Bomring",
+              Latitude: "59.91",
+              Longitude: "10.75",
               Avgifter: [
                 {
-                  Pris: 45.0,
-                  PrisRabbattert: 40.5
+                  Pris: isRoundTrip ? 90.0 : 45.0,
+                  PrisRabbattert: isRoundTrip ? 81.0 : 40.5
                 }
               ]
             },
             {
               Navn: "E6 Gardermoen",
+              Latitude: "60.19",
+              Longitude: "11.10",
               Avgifter: [
                 {
-                  Pris: 18.0,
-                  PrisRabbattert: 16.2
+                  Pris: isRoundTrip ? 36.0 : 18.0,
+                  PrisRabbattert: isRoundTrip ? 32.4 : 16.2
                 }
               ]
             }

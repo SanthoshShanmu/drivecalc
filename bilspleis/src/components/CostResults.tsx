@@ -21,6 +21,8 @@ interface CostResultsProps {
     }>;
   };
   totalCost: number;
+  isRoundTrip: boolean;
+  passengerCount: number;
 }
 
 export default function CostResults({
@@ -30,6 +32,8 @@ export default function CostResults({
   fuelCost,
   tollData,
   totalCost,
+  isRoundTrip,
+  passengerCount,
 }: CostResultsProps) {
   // Get the appropriate units based on fuel type
   const getConsumptionUnit = () => {
@@ -40,9 +44,15 @@ export default function CostResults({
     return fuelType === 'elbil' ? 'kr/kWh' : 'kr/liter';
   };
 
+  // Calculate cost per passenger
+  const costPerPassenger = totalCost / passengerCount;
+
   return (
     <div className={styles.resultsContainer}>
-      <h2>Kostnadsberegning</h2>
+      <h2>
+        Kostnadsberegning
+        {isRoundTrip && <span className={styles.roundTripBadge}>Tur-retur</span>}
+      </h2>
       
       <div className={styles.summary}>
         <div className={styles.summaryItem}>
@@ -85,6 +95,12 @@ export default function CostResults({
               <span>Pris:</span>
               <span>{(fuelCost / fuelConsumption).toFixed(2)} {getFuelCostUnit()}</span>
             </div>
+            {isRoundTrip && (
+              <div className={styles.costDetail}>
+                <span>Beregnet for:</span>
+                <span>Tur-retur</span>
+              </div>
+            )}
           </div>
         </div>
         
@@ -107,6 +123,11 @@ export default function CostResults({
                     <span>{station.fee.toFixed(2)} kr</span>
                   </div>
                 ))}
+                {isRoundTrip && (
+                  <div className={styles.costDetail + ' ' + styles.roundTripInfo}>
+                    <span>Prisene inkluderer retur</span>
+                  </div>
+                )}
               </>
             ) : (
               <div className={styles.costDetail}>
@@ -120,6 +141,22 @@ export default function CostResults({
           <div className={styles.costHeader}>
             <h3>Totale kjørekostnader</h3>
             <span className={styles.costAmount}>{totalCost.toFixed(2)} kr</span>
+          </div>
+          <div className={styles.costDetails}>
+            {isRoundTrip && (
+              <div className={styles.costDetail}>
+                <span>Beregnet for tur-retur reise</span>
+              </div>
+            )}
+            {passengerCount > 1 && (
+              <div className={styles.costSplit}>
+                <div className={styles.costSplitHeader}>
+                  <span className={styles.splitBadge}>{passengerCount} personer</span>
+                  <span>Bilspleis kostnad per person:</span>
+                  <span className={styles.splitAmount}>{costPerPassenger.toFixed(2)} kr</span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

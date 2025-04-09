@@ -50,7 +50,8 @@ type ApiRouteResponse = {
 export async function calculateTollFees(
   waypoints: Waypoint[],
   vehicle: 'car' | 'truck' = 'car',
-  fuelType: 'elbil' | 'hybrid' | 'diesel' | 'bensin' = 'bensin'
+  fuelType: 'elbil' | 'hybrid' | 'diesel' | 'bensin' = 'bensin',
+  isRoundTrip: boolean = false
 ): Promise<TollFeeResult> {
   try {
     // Format waypoints for the API
@@ -62,10 +63,12 @@ export async function calculateTollFees(
     // Prepare request payload
     const payload: {
       waypoints: FormattedWaypoint[],
-      vehicleType: VehicleCategory['type']
+      vehicleType: VehicleCategory['type'],
+      isRoundTrip: boolean
     } = {
       waypoints: formattedWaypoints,
-      vehicleType: mapVehicleType(vehicle, fuelType)
+      vehicleType: mapVehicleType(vehicle, fuelType),
+      isRoundTrip: isRoundTrip
     };
     
     // Call our own API endpoint
@@ -110,23 +113,23 @@ export async function calculateTollFees(
     console.error('Error calculating toll fees:', error);
     
     // For demo purposes, return mockup data if API fails
-    console.log('Using mockup toll fee data due to API error');
+    const mockupFee = isRoundTrip ? 251.0 : 125.50;
     return {
-      totalFee: 125.50,
+      totalFee: mockupFee,
       stations: [
         {
           name: "Oslo Bomring",
-          fee: 45.00,
+          fee: isRoundTrip ? 90.00 : 45.00,
           location: { lat: 59.91, lon: 10.75 }
         },
         {
           name: "E6 Gardermoen",
-          fee: 33.50,
+          fee: isRoundTrip ? 67.00 : 33.50,
           location: { lat: 60.19, lon: 11.10 }
         },
         {
           name: "Lillehammer",
-          fee: 47.00,
+          fee: isRoundTrip ? 94.00 : 47.00,
           location: { lat: 61.11, lon: 10.46 }
         }
       ]

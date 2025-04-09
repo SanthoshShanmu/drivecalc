@@ -8,18 +8,8 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Bilspleis | Beregn kjørekostnader for turer i Norge',
-  description: 'Planlegg din reise i Norge med nøyaktig beregning av drivstoff- og bompengepriser. Velg start og destinasjon, kjøretøytype og få en oversikt over totale kjørekostnader.',
+  description: 'Planlegg din reise i Norge med nøyaktig beregning av drivstoff- og bompengepriser.',
   keywords: 'kjørekostnader, bilkostnader, bompenger, drivstoffpriser, Norge, rute, reiseplanlegger, kostnadsberegner',
-  robots: 'index, follow',
-  viewport: 'width=device-width, initial-scale=1',
-  openGraph: {
-    title: 'Bilspleis | Beregn kjørekostnader for turer i Norge',
-    description: 'Planlegg din reise i Norge med nøyaktig beregning av drivstoff- og bompengepriser.',
-    url: 'https://bilspleis.no',
-    siteName: 'Bilspleis',
-    locale: 'nb_NO',
-    type: 'website',
-  },
 };
 
 export default function RootLayout({
@@ -28,22 +18,20 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="no">
+    <html lang="no" suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
                 try {
-                  const savedTheme = localStorage.getItem('theme');
-                  if (savedTheme === 'dark') {
-                    document.documentElement.classList.add('dark-mode');
-                  } else if (savedTheme === 'light') {
-                    document.documentElement.classList.add('light-mode');
+                  var savedTheme = localStorage.getItem('theme');
+                  if (savedTheme) {
+                    document.documentElement.classList.add(savedTheme + '-mode');
                   } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
                     document.documentElement.classList.add('dark-mode');
                   }
-                } catch (e) {}
+                } catch (err) {}
               })();
             `,
           }}
@@ -61,23 +49,6 @@ export default function RootLayout({
         </footer>
         
         <ThemeToggle />
-
-        {/* Script to prevent theme flash on load */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                try {
-                  var savedTheme = localStorage.getItem('theme');
-                  if (savedTheme === 'dark' || 
-                     (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                    document.documentElement.classList.add('dark-mode');
-                  }
-                } catch (e) {}
-              })();
-            `,
-          }}
-        />
       </body>
     </html>
   );

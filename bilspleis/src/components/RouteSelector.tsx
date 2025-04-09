@@ -1,132 +1,143 @@
 "use client";
 
-import { useEffect, useRef, useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import styles from './RouteSelector.module.css';
 import { searchLocations } from '@/lib/mapbox';
-
-type LocationResult = {
-  id: string;
-  place_name: string;
-  [key: string]: any;
-};
 
 type RouteSelectorProps = {
   origin: string;
   destination: string;
-  setOrigin: (value: string) => void;
-  setDestination: (value: string) => void;
+  setOrigin: (origin: string) => void;
+  setDestination: (destination: string) => void;
 };
 
-export default function RouteSelector({ 
-  origin, 
-  destination, 
+export default function RouteSelector({
+  origin,
+  destination,
   setOrigin,
   setDestination
-}: RouteSelectorProps): React.ReactElement { 
-  const [originQuery, setOriginQuery] = useState('');
-  const [destinationQuery, setDestinationQuery] = useState('');
-  const [originResults, setOriginResults] = useState<LocationResult[]>([]);
-  const [destinationResults, setDestinationResults] = useState<LocationResult[]>([]);
-  const destinationResultsRef = useRef<HTMLDivElement>(null);
-  const originResultsRef = useRef<HTMLDivElement>(null);
+}: RouteSelectorProps) {
+  const [originInput, setOriginInput] = useState(origin);
+  const [destinationInput, setDestinationInput] = useState(destination);
+  
+  const [originSuggestions, setOriginSuggestions] = useState<any[]>([]);
+  const [destinationSuggestions, setDestinationSuggestions] = useState<any[]>([]);
+  
   const [isLoadingOrigin, setIsLoadingOrigin] = useState(false);
   const [isLoadingDestination, setIsLoadingDestination] = useState(false);
   
+  // Add refs to track if inputs are focused
+  const originRef = useRef<HTMLInputElement>(null);
+  const destinationRef = useRef<HTMLInputElement>(null);
+  
+  // Add refs to track suggestion clicks
+  const originClickRef = useRef(false);
+  const destinationClickRef = useRef(false);
+
   useEffect(() => {
-    const searchOrigin = async () => {
-      if (originQuery.length < 2) {
-        setOriginResults([]);
-        return;
+    const delaySearch = setTimeout(async () => {
+      if (originInput && originInput !== origin) {
+        setIsLoadingOrigin(true);
+        try {
+          const suggestions = await searchLocations(originInput);
+          setOriginSuggestions(suggestions);
+        } catch (error) {
+          console.error('Error searching origin:', error);
+        } finally {
+          setIsLoadingOrigin(false);
+        }
+      } else if (!originInput) {
+        setOriginSuggestions([]);
       }
-      
-      setIsLoadingOrigin(true);
-      try {
-        const results = await searchLocations(originQuery, 'norway');
-        setOriginResults(results);
-      } catch (error) {
-        console.error('Feil ved søk etter startpunkt:', error);
-      } finally {
-        setIsLoadingOrigin(false);
-      }
-    };
+    }, 300);
     
-    const timer = setTimeout(searchOrigin, 300);
-    return () => clearTimeout(timer);
-  }, [originQuery]);
+    return () => clearTimeout(delaySearch);
+  }, [originInput, origin]);
   
   useEffect(() => {
-    const searchDestination = async () => {
-      if (destinationQuery.length < 2) {
-        setDestinationResults([]);
-        return;
+    const delaySearch = setTimeout(async () => {
+      if (destinationInput && destinationInput !== destination) {
+        setIsLoadingDestination(true);
+        try {
+          const suggestions = await searchLocations(destinationInput);
+          setDestinationSuggestions(suggestions);
+        } catch (error) {
+          console.error('Error searching destination:', error);
+        } finally {
+          setIsLoadingDestination(false);
+        }
+      } else if (!destinationInput) {
+        setDestinationSuggestions([]);
       }
-      
-      setIsLoadingDestination(true);
-      try {
-        const results = await searchLocations(destinationQuery, 'norway');
-        setDestinationResults(results);
-      } catch (error) {
-        console.error('Feil ved søk etter destinasjon:', error);
-      } finally {
-        setIsLoadingDestination(false);
-      }
-    };
+    }, 300);
     
-    const timer = setTimeout(searchDestination, 300);
-    return () => clearTimeout(timer);
-  }, [destinationQuery]);
+    return () => clearTimeout(delaySearch);
+  }, [destinationInput, destination]);
+
+  const handleOriginSelect = (placeName: string) => {
+    setOriginInput(placeName);
+    setOrigin(placeName);
+    setOriginSuggestions([]); // Clear suggestions immediately
+    originClickRef.current = true;
+    if (originRef.current) {
+      originRef.current.blur(); // Remove focus from input
+    }
+  };
   
-  // Close search results when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (originResultsRef.current && 
-          !originResultsRef.current.contains(event.target as Node)) {
-        setOriginResults([]);
-      }
-      
-      if (destinationResultsRef.current && 
-          !destinationResultsRef.current.contains(event.target as Node)) {
-        setDestinationResults([]);
-      }
-    };
-    
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-  
+  const handleDestinationSelect = (placeName: string) => {
+    setDestinationInput(placeName);
+    setDestination(placeName);
+    setDestinationSuggestions([]); // Clear suggestions immediately
+    destinationClickRef.current = true;
+    if (destinationRef.current) {
+      destinationRef.current.blur(); // Remove focus from input
+    }
+  };
+
   return (
     <div className={styles.container}>
-      <h2>Velg rute</h2>
-      
       <div className={styles.inputGroup}>
-        <label htmlFor="origin">Startpunkt:</label>
+        <label htmlFor="origin">Fra:</label>
         <div className={styles.autocompleteContainer}>
           <input
             id="origin"
+            ref={originRef}
             type="text"
-            value={originQuery}
-            onChange={(e) => setOriginQuery(e.target.value)}
-            placeholder="Skriv startpunkt..."
             className={styles.input}
+            value={originInput}
+            onChange={(e) => setOriginInput(e.target.value)}
+            placeholder="Skriv inn startsted"
+            onFocus={() => {
+              // Only show suggestions if not clicking an item
+              if (!originClickRef.current && originInput && originInput !== origin) {
+                searchLocations(originInput).then(setOriginSuggestions);
+              }
+            }}
+            onBlur={() => {
+              // Delay hiding suggestions to allow click to register
+              setTimeout(() => {
+                if (!originClickRef.current) {
+                  setOriginSuggestions([]);
+                }
+                originClickRef.current = false;
+              }, 200);
+            }}
           />
-          
           {isLoadingOrigin && <div className={styles.spinner} />}
           
-          {originResults.length > 0 && (
-            <div className={styles.resultsContainer} ref={originResultsRef}>
-              {originResults.map((result) => (
-                <div 
-                  key={result.id}
+          {originSuggestions.length > 0 && (
+            <div className={styles.resultsContainer}>
+              {originSuggestions.map((suggestion, index) => (
+                <div
+                  key={index}
                   className={styles.resultItem}
-                  onClick={() => {
-                    setOrigin(result.place_name);
-                    setOriginQuery(result.place_name);
-                    setOriginResults([]);
+                  onMouseDown={() => {
+                    // Use mouseDown instead of click to handle before blur
+                    originClickRef.current = true;
+                    handleOriginSelect(suggestion.place_name);
                   }}
                 >
-                  {result.place_name}
+                  {suggestion.place_name}
                 </div>
               ))}
             </div>
@@ -135,32 +146,47 @@ export default function RouteSelector({
       </div>
       
       <div className={styles.inputGroup}>
-        <label htmlFor="destination">Destinasjon:</label>
+        <label htmlFor="destination">Til:</label>
         <div className={styles.autocompleteContainer}>
           <input
             id="destination"
+            ref={destinationRef}
             type="text"
-            value={destinationQuery}
-            onChange={(e) => setDestinationQuery(e.target.value)}
-            placeholder="Skriv destinasjon..."
             className={styles.input}
+            value={destinationInput}
+            onChange={(e) => setDestinationInput(e.target.value)}
+            placeholder="Skriv inn destinasjon"
+            onFocus={() => {
+              // Only show suggestions if not clicking an item
+              if (!destinationClickRef.current && destinationInput && destinationInput !== destination) {
+                searchLocations(destinationInput).then(setDestinationSuggestions);
+              }
+            }}
+            onBlur={() => {
+              // Delay hiding suggestions to allow click to register
+              setTimeout(() => {
+                if (!destinationClickRef.current) {
+                  setDestinationSuggestions([]);
+                }
+                destinationClickRef.current = false;
+              }, 200);
+            }}
           />
-          
           {isLoadingDestination && <div className={styles.spinner} />}
           
-          {destinationResults.length > 0 && (
-            <div className={styles.resultsContainer} ref={destinationResultsRef}>
-              {destinationResults.map((result) => (
-                <div 
-                  key={result.id}
+          {destinationSuggestions.length > 0 && (
+            <div className={styles.resultsContainer}>
+              {destinationSuggestions.map((suggestion, index) => (
+                <div
+                  key={index}
                   className={styles.resultItem}
-                  onClick={() => {
-                    setDestination(result.place_name);
-                    setDestinationQuery(result.place_name);
-                    setDestinationResults([]);
+                  onMouseDown={() => {
+                    // Use mouseDown instead of click to handle before blur
+                    destinationClickRef.current = true;
+                    handleDestinationSelect(suggestion.place_name);
                   }}
                 >
-                  {result.place_name}
+                  {suggestion.place_name}
                 </div>
               ))}
             </div>

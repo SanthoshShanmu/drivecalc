@@ -15,16 +15,20 @@ export default function Home() {
   const [destination, setDestination] = useState('');
   const [vehicle, setVehicle] = useState<VehicleType>('car');
   const [fuelType, setFuelType] = useState<FuelType>('bensin');
+  const [isRoundTrip, setIsRoundTrip] = useState(false);
+  const [passengerCount, setPassengerCount] = useState(1);
   
   // Create wrapper functions to satisfy type requirements
   const handleVehicleChange = (vehicle: string) => setVehicle(vehicle as VehicleType);
   const handleFuelTypeChange = (fuelType: string) => setFuelType(fuelType as FuelType);
+  
   const [routeData, setRouteData] = useState<{
     distance: any;
     duration: any;
     geometry: any;
     waypoints: { location: any; name: string; }[];
   } | null>(null);
+  
   const [results, setResults] = useState<{
     distance: any;
     duration: any;
@@ -33,11 +37,14 @@ export default function Home() {
     totalCost: number;
     fuelConsumption: number;
     fuelPrice: number;
+    isRoundTrip: boolean;
+    passengerCount: number;
     tollData?: {
       stations: any[];
       totalFee?: number;
     };
   } | null>(null);
+  
   const [isCalculating, setIsCalculating] = useState(false);
   
   const calculateCosts = async () => {
@@ -54,14 +61,23 @@ export default function Home() {
       setRouteData(routeDetails);
       
       // 2. Calculate toll fees using Bompenge API
-      const tolls = await calculateTollFees(routeDetails.waypoints);
+      const tolls = await calculateTollFees(routeDetails.waypoints, vehicle, fuelType, isRoundTrip);
       
       // 3. Get fuel prices
       const fuelPrice = await getFuelPrice(fuelType);
       
       // 4. Calculate fuel consumption based on distance and vehicle type
+      let distance = routeDetails.distance;
+      let duration = routeDetails.duration;
+      
+      // If round trip, double the distance and duration
+      if (isRoundTrip) {
+        distance *= 2;
+        duration *= 2;
+      }
+      
       const fuelConsumption = calculateFuelConsumption(
-        routeDetails.distance, 
+        distance, 
         vehicle, 
         fuelType
       );
@@ -71,13 +87,15 @@ export default function Home() {
       const tollCost = tolls.totalFee || 0;
       
       setResults({
-        distance: routeDetails.distance,
-        duration: routeDetails.duration,
+        distance: distance,
+        duration: duration,
         fuelCost,
         tollCost,
         totalCost: fuelCost + tollCost,
         fuelConsumption,
         fuelPrice,
+        isRoundTrip,
+        passengerCount,
         tollData: {
           totalFee: tolls.totalFee || 0,
           stations: (tolls.stations || []).map(station => ({
@@ -116,6 +134,10 @@ export default function Home() {
               fuelType={fuelType}
               setVehicle={handleVehicleChange}
               setFuelType={handleFuelTypeChange}
+              isRoundTrip={isRoundTrip}
+              setIsRoundTrip={setIsRoundTrip}
+              passengerCount={passengerCount}
+              setPassengerCount={setPassengerCount}
             />
             
             <button 
@@ -139,8 +161,13 @@ export default function Home() {
         
         {results && routeData && <CostResults 
           {...results} 
-          routeData={routeData} 
+          routeData={{
+            distance: results.distance,
+            duration: results.duration,
+          }}
           fuelType={fuelType} 
+          isRoundTrip={isRoundTrip}
+          passengerCount={passengerCount}
           tollData={{ 
             totalFee: results.tollData?.totalFee || 0, 
             stations: results.tollData?.stations || [] 
