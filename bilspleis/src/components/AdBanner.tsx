@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import styles from './AdBanner.module.css';
 
 interface AdBannerProps {
@@ -17,14 +17,16 @@ export default function AdBanner({
   className
 }: AdBannerProps) {
   const adRef = useRef<HTMLModElement>(null);
+  const initializedRef = useRef(false);
   
   useEffect(() => {
-    // Only run this on the client side
-    if (typeof window !== 'undefined') {
+    // Only run this on the client side and only once
+    if (typeof window !== 'undefined' && !initializedRef.current) {
       try {
         // Add AdSense ad code
         const adsbygoogle = (window as any).adsbygoogle || [];
         adsbygoogle.push({});
+        initializedRef.current = true;
       } catch (error) {
         console.error('Error loading AdSense:', error);
       }

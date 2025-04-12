@@ -23,6 +23,11 @@ interface CostResultsProps {
   totalCost: number;
   isRoundTrip: boolean;
   passengerCount: number;
+  stops: Array<{
+    name: string;
+    lat: number;
+    lon: number;
+  }>;
 }
 
 export default function CostResults({
@@ -34,6 +39,7 @@ export default function CostResults({
   totalCost,
   isRoundTrip,
   passengerCount,
+  stops,
 }: CostResultsProps) {
   // Get the appropriate units based on fuel type
   const getConsumptionUnit = () => {
@@ -160,6 +166,21 @@ export default function CostResults({
           </div>
         </div>
       </div>
+
+      {/* Add stops information if any */}
+      {stops.length > 0 && (
+        <div className={styles.stopsInfo}>
+          <h3>Mellomstoppesteder</h3>
+          <div className={styles.stopsList}>
+            {stops.map((stop, index) => (
+              <div key={index} className={styles.stopItem}>
+                <span className={styles.stopNumber}>{index + 1}</span>
+                <span className={styles.stopName}>{stop.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

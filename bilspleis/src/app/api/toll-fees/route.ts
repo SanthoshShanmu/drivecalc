@@ -7,11 +7,10 @@ const API_KEY = process.env.NEXT_PUBLIC_BOMPENGE_API_KEY;
 
 export async function POST(request: Request) {
   try {
-    const data = await request.json();
-    const { waypoints, vehicleType, isRoundTrip } = data;
+    const { waypoints, vehicle, fuelType, isRoundTrip } = await request.json();
     
     if (!waypoints || waypoints.length < 2) {
-      return NextResponse.json({ error: 'Need at least origin and destination waypoints' }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid waypoints' }, { status: 400 });
     }
     
     // Format date and time for API
@@ -24,21 +23,23 @@ export async function POST(request: Request) {
     let litenbiltype = 1; // Default to gasoline
     let storbiltype = 0; // Not a large vehicle
     
-    if (vehicleType === 'ElectricVehicle') {
+    if (vehicle === 'ElectricVehicle') {
       litenbiltype = 5;
-    } else if (vehicleType === 'DieselCar') {
+    } else if (vehicle === 'DieselCar') {
       litenbiltype = 2;
-    } else if (vehicleType === 'HybridVehicle') {
+    } else if (vehicle === 'HybridVehicle') {
       litenbiltype = 3;
-    } else if (vehicleType === 'HeavyVehicle') {
+    } else if (vehicle === 'HeavyVehicle') {
       bilsize = 2;
       storbiltype = 1;
       litenbiltype = 0;
     }
     
-    // Format waypoints according to API
+    // First waypoint is origin
     const origin = waypoints[0];
+    // Last waypoint is destination
     const destination = waypoints[waypoints.length - 1];
+    // Any waypoints in between are via points
     const viaPoints = waypoints.slice(1, waypoints.length - 1);
     
     // Build request payload in correct format

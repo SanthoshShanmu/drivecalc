@@ -1,0 +1,117 @@
+.stopsContainer {
+  margin: 1rem 0;
+  width: 100%;
+}
+
+.stopItem {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  gap: 0.5rem;
+}
+
+.stopNumber {
+  background-color: var(--primary);
+  color: white;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.autocompleteContainer {
+  position: relative;
+  flex: 1;
+}
+
+.stopInput {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+
+.removeStopButton {
+  background-color: rgba(255, 0, 0, 0.1);
+  color: #ff3333;
+  border: 1px solid rgba(255, 0, 0, 0.2);
+  border-radius: 50%;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.addStopButton {
+  background-color: transparent;
+  color: var(--primary);
+  border: 1px dashed var(--primary);
+  border-radius: 4px;
+  width: 100%;
+  padding: 0.5rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.addStopButton:hover {
+  background-color: rgba(var(--primary-rgb), 0.05);
+}
+
+/* Location suggestions dropdown */
+.resultsContainer {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: var(--background); /* Use theme variable instead of hardcoded #fff */
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  box-shadow: 0 4px 6px var(--shadow-color);
+  z-index: 10;
+}
+
+.resultItem {
+  padding: 0.5rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--foreground); /* Add text color for dark mode */
+}
+
+.resultItem:hover {
+  background-color: var(--secondary-background); /* Use theme variable instead of RGB */
+}
+
+/* Loading spinner */
+.spinner {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(var(--primary-rgb), 0.3);
+  border-radius: 50%;
+  border-top-color: var(--primary);
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: translateY(-50%) rotate(360deg);
+  }
+}

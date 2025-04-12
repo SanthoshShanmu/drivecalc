@@ -71,3 +71,13 @@
 .tollMarker {
   background-color: var(--toll-marker);
 }
+
+.stopMarker {
+  background-color: #9C27B0; /* Purple color for stops */
+}
+
+@media (prefers-color-scheme: dark) {
+  .stopMarker {
+    background-color: #BA68C8; /* Slightly lighter purple for dark mode */
+  }
+}

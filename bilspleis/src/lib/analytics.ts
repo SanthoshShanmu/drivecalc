@@ -30,7 +30,7 @@ export function useAnalytics() {
       if (typeof window !== 'undefined' && 'gtag' in window) {
         const gtag = (window as any).gtag;
         
-        gtag('config', 'G-XXXXXXXXXX', {
+        gtag('config', 'G-8KJNNPHE9E', {
           page_path: path,
           page_title: title
         });

@@ -11,10 +11,13 @@ import styles from './page.module.css';
 import { calculateTollFees } from '@/lib/tolls';
 import { calculateFuelConsumption, getFuelPrice, FuelType, VehicleType } from '@/lib/fuel';
 import { useAnalytics } from '@/lib/analytics';
+import StopList from '@/components/StopList';
+import { LocationSuggestion } from '@/types/locations';
 
 export default function Home() {
-  const [origin, setOrigin] = useState('');
-  const [destination, setDestination] = useState('');
+  const [origin, setOrigin] = useState<LocationSuggestion | null>(null);
+  const [destination, setDestination] = useState<LocationSuggestion | null>(null);
+  const [stops, setStops] = useState<LocationSuggestion[]>([]);
   const [vehicle, setVehicle] = useState<VehicleType>('car');
   const [fuelType, setFuelType] = useState<FuelType>('bensin');
   const [isRoundTrip, setIsRoundTrip] = useState(false);
@@ -64,17 +67,23 @@ export default function Home() {
       trackEvent('calculate_route', {
         origin,
         destination,
+        stop_count: stops.length,
         vehicle_type: vehicle,
         fuel_type: fuelType,
         round_trip: isRoundTrip
       });
       
-      // Use the imported function here
-      const routeDetails = await fetchRouteFromMapbox(origin, destination);
+      // Pass stops to the route calculation function
+      const routeDetails = await fetchRouteFromMapbox(origin, destination, stops);
       setRouteData(routeDetails);
       
-      // 2. Calculate toll fees using Bompenge API
-      const tolls = await calculateTollFees(routeDetails.waypoints, vehicle, fuelType, isRoundTrip);
+      // Update toll calculation to include stops
+      const tolls = await calculateTollFees(
+        routeDetails.waypoints,
+        vehicle,
+        fuelType,
+        isRoundTrip
+      );
       
       // 3. Get fuel prices
       const fuelPrice = await getFuelPrice(fuelType);
@@ -155,6 +164,13 @@ export default function Home() {
               setOrigin={setOrigin}
               setDestination={setDestination}
             />
+            
+            {/* Add the StopList component here */}
+            <StopList 
+              stops={stops} 
+              setStops={setStops} 
+            />
+            
             <VehicleSelector
               vehicle={vehicle}
               fuelType={fuelType}
@@ -176,10 +192,18 @@ export default function Home() {
           </div>
           
           <div className={styles.mapContainer}>
+            {/* Show map at all times */}
             <Map 
               routeGeometry={routeData?.geometry}
-              origin={origin ? { longitude: routeData?.geometry.coordinates[0][0], latitude: routeData?.geometry.coordinates[0][1] } : undefined}
-              destination={destination ? { longitude: routeData?.geometry.coordinates[routeData?.geometry.coordinates.length - 1][0], latitude: routeData?.geometry.coordinates[routeData?.geometry.coordinates.length - 1][1] } : undefined}
+              origin={origin ? {
+                longitude: origin.lon,
+                latitude: origin.lat
+              } : undefined}
+              destination={destination ? {
+                longitude: destination.lon,
+                latitude: destination.lat
+              } : undefined}
+              stops={stops}
               tollStations={results?.tollData?.stations}
             />
           </div>
@@ -187,7 +211,7 @@ export default function Home() {
         
         {!results && (
           <AdBanner
-            adClient="ca-pub-XXXXXXXXXXXXXXXX"
+            adClient="ca-pub-7726641596892047"
             adSlot="1234567890"
             adFormat="auto"
             className={styles.topAd}
@@ -207,11 +231,12 @@ export default function Home() {
             totalFee: results.tollData?.totalFee || 0, 
             stations: results.tollData?.stations || [] 
           }}
+          stops={stops}
         />}
         
         {results && (
           <AdBanner
-            adClient="ca-pub-XXXXXXXXXXXXXXXX"
+            adClient="ca-pub-7726641596892047"
             adSlot="0987654321"
             adFormat="rectangle"
             className={styles.resultsAd}
@@ -222,7 +247,7 @@ export default function Home() {
         <section className={styles.infoSection}>
           <h2>Om Bilspleis</h2>
           <p>
-            Bilspleis er en norsk tjeneste som hjelper deg beregne de reelle kostnadene for 
+            Bilspleis er en tjeneste som hjelper deg beregne de reelle kostnadene for 
             bilturer i Norge. Vi inkluderer drivstoff-forbruk basert på kjøretøytype og 
             nøyaktige bompengesatser for å gi deg det komplette bildet av hva reisen din koster.
           </p>

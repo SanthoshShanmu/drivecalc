@@ -2,13 +2,15 @@
 
 import { useState, useEffect, useRef } from 'react';
 import styles from './RouteSelector.module.css';
+import { LocationSuggestion } from '@/types/locations';
 import { searchLocations } from '@/lib/mapbox';
 
+// Update props to use LocationSuggestion objects
 type RouteSelectorProps = {
-  origin: string;
-  destination: string;
-  setOrigin: (origin: string) => void;
-  setDestination: (destination: string) => void;
+  origin: LocationSuggestion | null;
+  destination: LocationSuggestion | null;
+  setOrigin: (origin: LocationSuggestion) => void;
+  setDestination: (destination: LocationSuggestion) => void;
 };
 
 export default function RouteSelector({
@@ -17,26 +19,26 @@ export default function RouteSelector({
   setOrigin,
   setDestination
 }: RouteSelectorProps) {
-  const [originInput, setOriginInput] = useState(origin);
-  const [destinationInput, setDestinationInput] = useState(destination);
+  // Use the name property from LocationSuggestion in the input fields
+  const [originInput, setOriginInput] = useState(origin?.name || '');
+  const [destinationInput, setDestinationInput] = useState(destination?.name || '');
   
-  const [originSuggestions, setOriginSuggestions] = useState<any[]>([]);
-  const [destinationSuggestions, setDestinationSuggestions] = useState<any[]>([]);
+  const [originSuggestions, setOriginSuggestions] = useState<LocationSuggestion[]>([]);
+  const [destinationSuggestions, setDestinationSuggestions] = useState<LocationSuggestion[]>([]);
   
   const [isLoadingOrigin, setIsLoadingOrigin] = useState(false);
   const [isLoadingDestination, setIsLoadingDestination] = useState(false);
   
-  // Add refs to track if inputs are focused
   const originRef = useRef<HTMLInputElement>(null);
   const destinationRef = useRef<HTMLInputElement>(null);
   
-  // Add refs to track suggestion clicks
   const originClickRef = useRef(false);
   const destinationClickRef = useRef(false);
 
+  // Update effect to compare with origin?.name
   useEffect(() => {
     const delaySearch = setTimeout(async () => {
-      if (originInput && originInput !== origin) {
+      if (originInput && originInput !== origin?.name) {
         setIsLoadingOrigin(true);
         try {
           const suggestions = await searchLocations(originInput);
@@ -54,9 +56,10 @@ export default function RouteSelector({
     return () => clearTimeout(delaySearch);
   }, [originInput, origin]);
   
+  // Update effect to compare with destination?.name
   useEffect(() => {
     const delaySearch = setTimeout(async () => {
-      if (destinationInput && destinationInput !== destination) {
+      if (destinationInput && destinationInput !== destination?.name) {
         setIsLoadingDestination(true);
         try {
           const suggestions = await searchLocations(destinationInput);
@@ -74,23 +77,24 @@ export default function RouteSelector({
     return () => clearTimeout(delaySearch);
   }, [destinationInput, destination]);
 
-  const handleOriginSelect = (placeName: string) => {
-    setOriginInput(placeName);
-    setOrigin(placeName);
-    setOriginSuggestions([]); // Clear suggestions immediately
+  // Update handlers to pass LocationSuggestion objects
+  const handleOriginSelect = (suggestion: LocationSuggestion) => {
+    setOriginInput(suggestion.name);
+    setOrigin(suggestion);
+    setOriginSuggestions([]);
     originClickRef.current = true;
     if (originRef.current) {
-      originRef.current.blur(); // Remove focus from input
+      originRef.current.blur();
     }
   };
   
-  const handleDestinationSelect = (placeName: string) => {
-    setDestinationInput(placeName);
-    setDestination(placeName);
-    setDestinationSuggestions([]); // Clear suggestions immediately
+  const handleDestinationSelect = (suggestion: LocationSuggestion) => {
+    setDestinationInput(suggestion.name);
+    setDestination(suggestion);
+    setDestinationSuggestions([]);
     destinationClickRef.current = true;
     if (destinationRef.current) {
-      destinationRef.current.blur(); // Remove focus from input
+      destinationRef.current.blur();
     }
   };
 
@@ -108,13 +112,11 @@ export default function RouteSelector({
             onChange={(e) => setOriginInput(e.target.value)}
             placeholder="Skriv inn startsted"
             onFocus={() => {
-              // Only show suggestions if not clicking an item
-              if (!originClickRef.current && originInput && originInput !== origin) {
+              if (!originClickRef.current && originInput && originInput !== origin?.name) {
                 searchLocations(originInput).then(setOriginSuggestions);
               }
             }}
             onBlur={() => {
-              // Delay hiding suggestions to allow click to register
               setTimeout(() => {
                 if (!originClickRef.current) {
                   setOriginSuggestions([]);
@@ -132,12 +134,11 @@ export default function RouteSelector({
                   key={index}
                   className={styles.resultItem}
                   onMouseDown={() => {
-                    // Use mouseDown instead of click to handle before blur
                     originClickRef.current = true;
-                    handleOriginSelect(suggestion.place_name);
+                    handleOriginSelect(suggestion);
                   }}
                 >
-                  {suggestion.place_name}
+                  {suggestion.name}
                 </div>
               ))}
             </div>
@@ -157,13 +158,11 @@ export default function RouteSelector({
             onChange={(e) => setDestinationInput(e.target.value)}
             placeholder="Skriv inn destinasjon"
             onFocus={() => {
-              // Only show suggestions if not clicking an item
-              if (!destinationClickRef.current && destinationInput && destinationInput !== destination) {
+              if (!destinationClickRef.current && destinationInput && destinationInput !== destination?.name) {
                 searchLocations(destinationInput).then(setDestinationSuggestions);
               }
             }}
             onBlur={() => {
-              // Delay hiding suggestions to allow click to register
               setTimeout(() => {
                 if (!destinationClickRef.current) {
                   setDestinationSuggestions([]);
@@ -181,12 +180,11 @@ export default function RouteSelector({
                   key={index}
                   className={styles.resultItem}
                   onMouseDown={() => {
-                    // Use mouseDown instead of click to handle before blur
                     destinationClickRef.current = true;
-                    handleDestinationSelect(suggestion.place_name);
+                    handleDestinationSelect(suggestion);
                   }}
                 >
-                  {suggestion.place_name}
+                  {suggestion.name}
                 </div>
               ))}
             </div>
