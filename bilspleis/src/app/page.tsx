@@ -6,9 +6,11 @@ import RouteSelector from '@/components/RouteSelector';
 import VehicleSelector from '@/components/VehicleSelector';
 import CostResults from '@/components/CostResults';
 import Map from '@/components/Map';
+import AdBanner from '@/components/AdBanner';
 import styles from './page.module.css';
 import { calculateTollFees } from '@/lib/tolls';
 import { calculateFuelConsumption, getFuelPrice, FuelType, VehicleType } from '@/lib/fuel';
+import { useAnalytics } from '@/lib/analytics';
 
 export default function Home() {
   const [origin, setOrigin] = useState('');
@@ -47,6 +49,8 @@ export default function Home() {
   
   const [isCalculating, setIsCalculating] = useState(false);
   
+  const { trackEvent } = useAnalytics();
+  
   const calculateCosts = async () => {
     if (!origin || !destination) {
       alert('Vennligst velg start- og sluttdestinasjon');
@@ -56,6 +60,15 @@ export default function Home() {
     setIsCalculating(true);
     
     try {
+      // Track event when calculation starts
+      trackEvent('calculate_route', {
+        origin,
+        destination,
+        vehicle_type: vehicle,
+        fuel_type: fuelType,
+        round_trip: isRoundTrip
+      });
+      
       // Use the imported function here
       const routeDetails = await fetchRouteFromMapbox(origin, destination);
       setRouteData(routeDetails);
@@ -108,9 +121,22 @@ export default function Home() {
           }))
         }
       });
+      
+      // Track successful calculation
+      trackEvent('calculation_complete', {
+        distance: distance,
+        duration: duration,
+        total_cost: fuelCost + tollCost
+      });
+      
     } catch (error) {
       console.error('Feil ved beregning av kostnader:', error);
       alert('Det oppstod en feil ved beregning av kostnader. Vennligst prøv igjen.');
+      
+      // Track error
+      trackEvent('calculation_error', {
+        error: (error as Error).message
+      });
     } finally {
       setIsCalculating(false);
     }
@@ -159,6 +185,15 @@ export default function Home() {
           </div>
         </div>
         
+        {!results && (
+          <AdBanner
+            adClient="ca-pub-XXXXXXXXXXXXXXXX"
+            adSlot="1234567890"
+            adFormat="auto"
+            className={styles.topAd}
+          />
+        )}
+        
         {results && routeData && <CostResults 
           {...results} 
           routeData={{
@@ -173,6 +208,29 @@ export default function Home() {
             stations: results.tollData?.stations || [] 
           }}
         />}
+        
+        {results && (
+          <AdBanner
+            adClient="ca-pub-XXXXXXXXXXXXXXXX"
+            adSlot="0987654321"
+            adFormat="rectangle"
+            className={styles.resultsAd}
+          />
+        )}
+        
+        {/* SEO-friendly content */}
+        <section className={styles.infoSection}>
+          <h2>Om Bilspleis</h2>
+          <p>
+            Bilspleis er en norsk tjeneste som hjelper deg beregne de reelle kostnadene for 
+            bilturer i Norge. Vi inkluderer drivstoff-forbruk basert på kjøretøytype og 
+            nøyaktige bompengesatser for å gi deg det komplette bildet av hva reisen din koster.
+          </p>
+          <p>
+            Perfekt for både privatpersoner som vil dele kostnader mellom venner, 
+            og for bedrifter som trenger nøyaktig dokumentasjon av reiseutgifter.
+          </p>
+        </section>
       </div>
     </main>
   );
