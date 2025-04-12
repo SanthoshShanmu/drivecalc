@@ -31,7 +31,7 @@ DriveCalc is a web application that helps you calculate driving costs in Norway.
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/drivecalc.git
+git clone https://github.com/SanthoshShanmu/drivecalc.git
 cd drivecalc
 ```
 
