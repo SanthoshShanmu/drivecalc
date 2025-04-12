@@ -29,6 +29,27 @@ export default function RootLayout({
   return (
     <html lang="no" suppressHydrationWarning>
       <head>
+        {/* Add this meta tag with your AdSense publisher ID */}
+        <meta 
+          name="google-adsense-account" 
+          content="ca-pub-7726641596892047"
+        />
+        
+        {/* The AdSense script */}
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7726641596892047"
+          crossOrigin="anonymous"
+        />
+        
+        {/* This ensures the script renders in the head, not body */}
+        <Script 
+          id="adsbygoogle-init"
+          strategy="beforeInteractive"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7726641596892047"
+          crossOrigin="anonymous"
+        />
+        
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -80,14 +101,6 @@ export default function RootLayout({
         
         <ThemeToggle />
 
-        {/* Google AdSense Script */}
-        <Script 
-          id="adsbygoogle-init"
-          strategy="afterInteractive"
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7726641596892047"
-          crossOrigin="anonymous"
-        />
-        
         {/* Google Analytics Script */}
         <Script
           id="gtag-init"
