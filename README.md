@@ -1,6 +1,6 @@
-# Bilspleis - Norwegian Driving Cost Calculator
+# DriveCalc - Norwegian Driving Cost Calculator
 
-Bilspleis is a web application that helps you calculate driving costs in Norway. It provides accurate estimates for fuel consumption, toll expenses, and total travel costs between locations.
+DriveCalc is a web application that helps you calculate driving costs in Norway. It provides accurate estimates for fuel consumption, toll expenses, and total travel costs between locations.
 
 ## Features
 
@@ -31,8 +31,8 @@ Bilspleis is a web application that helps you calculate driving costs in Norway.
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/bilspleis.git
-cd bilspleis
+git clone https://github.com/yourusername/drivecalc.git
+cd drivecalc
 ```
 
 2. Install dependencies:
@@ -73,7 +73,7 @@ npm run start
 ## Project Structure
 
 ```
-bilspleis/
+drivecalc/
 ├── src/
 │   ├── app/          # Next.js app router pages
 │   ├── components/   # React components

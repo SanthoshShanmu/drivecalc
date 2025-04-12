@@ -2,7 +2,7 @@ import styles from './page.module.css';
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Drivstoffsparing tips | Bilspleis',
+  title: 'Drivstoffsparing tips | DriveCalc',
   description: 'Effektive tips for å spare drivstoff og redusere dine kjørekostnader i Norge',
   keywords: 'drivstoffsparing, spareråd, kjøretips, økonomisk kjøring, bilhold, drivstofføkonomi',
 };
@@ -58,7 +58,7 @@ export default function FuelSavingTips() {
             <h2>Reiseplanlegging</h2>
             <ul className={styles.tipList}>
               <li>
-                <strong>Ruteplanlegging:</strong> Bruk <Link href="/">Bilspleis</Link> for å finne 
+                <strong>Ruteplanlegging:</strong> Bruk <Link href="/">DriveCalc</Link> for å finne 
                 den mest kostnadseffektive ruten.
               </li>
               <li>

@@ -154,7 +154,7 @@ export default function Home() {
   return (
     <main className={styles.main}>
       <div className={styles.container}>
-        <h1 className={styles.title}>Bilspleis - Beregn kjørekostnader i Norge</h1>
+        <h1 className={styles.title}>DriveCalc - Beregn kjørekostnader i Norge</h1>
         
         <div className={styles.grid}>
           <div className={styles.formContainer}>
@@ -245,9 +245,9 @@ export default function Home() {
         
         {/* SEO-friendly content */}
         <section className={styles.infoSection}>
-          <h2>Om Bilspleis</h2>
+          <h2>Om DriveCalc</h2>
           <p>
-            Bilspleis er en tjeneste som hjelper deg beregne de reelle kostnadene for 
+            DriveCalc er en tjeneste som hjelper deg beregne de reelle kostnadene for 
             bilturer i Norge. Vi inkluderer drivstoff-forbruk basert på kjøretøytype og 
             nøyaktige bompengesatser for å gi deg det komplette bildet av hva reisen din koster.
           </p>

@@ -8,15 +8,15 @@ import Script from 'next/script';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Bilspleis | Beregn kjørekostnader for turer i Norge',
+  title: 'DriveCalc | Beregn kjørekostnader for turer i Norge',
   description: 'Planlegg din reise i Norge med nøyaktig beregning av drivstoff- og bompengepriser. Spar penger på dine bilturer.',
-  keywords: 'kjørekostnader, bilkostnader, bompenger, drivstoffpriser, Norge, rute, reiseplanlegger, kostnadsberegner, bilspleis, biløkonomi',
-  authors: [{ name: 'Bilspleis Team' }],
+  keywords: 'kjørekostnader, bilkostnader, bompenger, drivstoffpriser, Norge, rute, reiseplanlegger, kostnadsberegner, drivecalc, biløkonomi',
+  authors: [{ name: 'DriveCalc Team' }],
   robots: 'index, follow',
   openGraph: {
-    title: 'Bilspleis | Beregn kjørekostnader for turer i Norge',
+    title: 'DriveCalc | Beregn kjørekostnader for turer i Norge',
     description: 'Planlegg din reise i Norge med nøyaktig beregning av drivstoff- og bompengepriser.',
-    url: 'https://bilspleis.no',
+    url: 'https://drivecalc.vercel.app',
     type: 'website'
   }
 };
@@ -74,7 +74,7 @@ export default function RootLayout({
               {
                 "@context": "https://schema.org",
                 "@type": "WebApplication",
-                "name": "Bilspleis",
+                "name": "DriveCalc",
                 "description": "Beregn kjørekostnader for turer i Norge, inkludert drivstoff og bompenger",
                 "applicationCategory": "UtilityApplication",
                 "operatingSystem": "Any",
@@ -94,7 +94,7 @@ export default function RootLayout({
         <footer className="site-footer">
           <div className="container">
             <div className="copyright">
-              &copy; {new Date().getFullYear()} Bilspleis. Alle rettigheter reservert.
+              &copy; {new Date().getFullYear()} DriveCalc. Alle rettigheter reservert.
             </div>
           </div>
         </footer>

@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/api/'],
     },
-    sitemap: 'https://bilspleis.no/sitemap.xml',
+    sitemap: 'https://drivecalc.vercel.app/sitemap.xml',
   };
 }

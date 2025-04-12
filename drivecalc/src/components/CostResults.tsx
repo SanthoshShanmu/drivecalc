@@ -158,7 +158,7 @@ export default function CostResults({
               <div className={styles.costSplit}>
                 <div className={styles.costSplitHeader}>
                   <span className={styles.splitBadge}>{passengerCount} personer</span>
-                  <span>Bilspleis kostnad per person:</span>
+                  <span>DriveCalc kostnad per person:</span>
                   <span className={styles.splitAmount}>{costPerPassenger.toFixed(2)} kr</span>
                 </div>
               </div>
