@@ -302,11 +302,11 @@ export default function Home() {
         
         {/* SEO-friendly content */}
         <section className={styles.infoSection}>
-          <h2>Beregn kjørekostnader i Norge</h2>
+          <h2>Beregn kjørekostnader og bomavgifter i Norge</h2>
           <p>
-            DriveCalc gir deg nøyaktige kostnadsberegninger for bilturer i Norge. 
-            Vår kalkulator inkluderer <strong>oppdaterte drivstoffpriser</strong>, 
-            <strong> bompengesatser</strong> og <strong>kjøretøyspesifikt drivstofforbruk</strong>.
+            DriveCalc er Norges mest nøyaktige <strong>bompenge kalkulator</strong> og verktøy for å 
+            <strong> beregne kjørekostnad</strong> på norske veier. Vi oppdaterer kontinuerlig våre 
+            <strong> drivstoffpriser</strong> og bomavgifter for å sikre at du alltid får de mest nøyaktige beregningene.
           </p>
           
           <div className={styles.featuresGrid}>
@@ -330,6 +330,19 @@ export default function Home() {
               <p>Fra Oslo til Bergen, Stavanger til Tromsø, eller hvor som helst i Norge - vi beregner alle kostnader.</p>
             </div>
           </div>
+          
+          <h2>Hvorfor velge vår bompenge kalkulator?</h2>
+          <p>
+            Vår avanserte bompenge kalkulator tar hensyn til alle bomstasjoner langs ruten din, 
+            inkludert rabatter for elbil, AutoPASS og tidspunkter på døgnet. Vi oppdaterer 
+            kontinuerlig våre data for å sikre at du alltid får de mest nøyaktige beregningene.
+          </p>
+          
+          <h2>Oppdaterte drivstoffkostnader</h2>
+          <p>
+            DriveCalc henter daglig oppdaterte bensinpriser, dieselpriser og el-priser fra hele Norge. 
+            Vår kalkulator beregner nøyaktig drivstofforbruk basert på distanse, kjøretøytype og kjøremønster.
+          </p>
           
           <h2>Populære ruter i Norge</h2>
           <div className={styles.popularRoutes}>

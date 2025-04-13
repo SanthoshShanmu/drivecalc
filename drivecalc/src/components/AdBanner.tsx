@@ -21,6 +21,9 @@ export default function AdBanner({ adClient, adSlot, adFormat = 'auto', classNam
     // Mark as loaded to prevent duplicate initialization
     isLoaded.current = true;
     
+    // Store current ref value for cleanup
+    const currentRef = adRef.current;
+    
     // Create the ad element
     const adElement = document.createElement('ins');
     adElement.className = 'adsbygoogle';
@@ -30,12 +33,12 @@ export default function AdBanner({ adClient, adSlot, adFormat = 'auto', classNam
     adElement.dataset.adFormat = adFormat;
     
     // Clear any existing content
-    if (adRef.current.firstChild) {
-      adRef.current.innerHTML = '';
+    if (currentRef.firstChild) {
+      currentRef.innerHTML = '';
     }
     
     // Add the element to DOM
-    adRef.current.appendChild(adElement);
+    currentRef.appendChild(adElement);
     
     // Push the ad command
     try {
@@ -48,8 +51,8 @@ export default function AdBanner({ adClient, adSlot, adFormat = 'auto', classNam
     // Cleanup function
     return () => {
       isLoaded.current = false;
-      if (adRef.current) {
-        adRef.current.innerHTML = '';
+      if (currentRef) {
+        currentRef.innerHTML = '';
       }
     };
   }, [adClient, adSlot, adFormat]);

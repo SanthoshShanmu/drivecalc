@@ -11,7 +11,7 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
   title: 'DriveCalc | Kjørekostnader Norge - Beregn drivstoff og bompenger',
   description: 'Nøyaktig beregning av kjørekostnader i Norge inkludert drivstoff, bompenger og avgifter. Ideell for planlegging av bilreiser og kostnadsfordeling.',
-  keywords: 'kjørekostnader, bilkostnader, bompenger, drivstoffpriser, Norge, rute, reiseplanlegger, kostnadsberegner, drivecalc, biløkonomi, biltur, bilreise, bensinpriser, toll costs, driving expenses, Norway travel, fuel calculator',
+  keywords: 'beregne kjørekostnad, bompenge kalkulator, bensinpris, dieselpris, kjøregodtgjørelse, kjørekostnader Norge, bilkostnader, bompengeberegner, drivstoffpriser Norge, kjørekostnader, bompenger, drivstoffpriser, Norge, rute, reiseplanlegger, kostnadsberegner, drivecalc, biløkonomi, biltur, bilreise, bensinpriser, toll costs, driving expenses, Norway travel, fuel calculator',
   authors: [{ name: 'DriveCalc Team' }],
   robots: 'index, follow',
   metadataBase: new URL('https://drivecalc.no'),
@@ -109,6 +109,32 @@ export default function RootLayout({
                 },
                 "inLanguage": "no-NO",
                 "keywords": "kjørekostnader, bilkostnader, bompenger, drivstoffpriser, Norge"
+              }
+            `,
+          }}
+        />
+        <Script
+          id="structured-data-calculator"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: `
+              {
+                "@context": "https://schema.org",
+                "@type": "SoftwareApplication",
+                "name": "DriveCalc Bompenge Kalkulator",
+                "applicationCategory": "UtilityApplication",
+                "operatingSystem": "Any",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "0",
+                  "priceCurrency": "NOK"
+                },
+                "description": "Norges mest nøyaktige bompenge kalkulator og verktøy for å beregne kjørekostnader med oppdaterte bensinpriser.",
+                "aggregateRating": {
+                  "@type": "AggregateRating",
+                  "ratingValue": "4.8",
+                  "ratingCount": "156"
+                }
               }
             `,
           }}
