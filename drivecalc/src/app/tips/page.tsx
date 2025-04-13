@@ -74,7 +74,7 @@ export default function FuelSavingTips() {
           <section className={styles.section}>
             <h2>Beregn dine kostnader</h2>
             <p>
-              For å se hvor mye du sparer med disse tipsene, bruk vår <Link href="/">kostnadskalkulator</Link> 
+              For å se hvor mye du sparer med disse tipsene, bruk vår <Link href="/">kostnadskalkulator </Link> 
               for å sammenligne ditt vanlige forbruk med et optimalisert forbruk.
             </p>
           </section>

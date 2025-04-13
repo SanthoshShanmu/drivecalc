@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/api/'],
     },
-    sitemap: 'https://drivecalc.vercel.app/sitemap.xml',
+    sitemap: 'https://drivecalc.no/sitemap.xml',
   };
 }

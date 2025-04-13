@@ -245,15 +245,55 @@ export default function Home() {
         
         {/* SEO-friendly content */}
         <section className={styles.infoSection}>
-          <h2>Om DriveCalc</h2>
+          <h2>Beregn kjørekostnader i Norge</h2>
           <p>
-            DriveCalc er en tjeneste som hjelper deg beregne de reelle kostnadene for 
-            bilturer i Norge. Vi inkluderer drivstoff-forbruk basert på kjøretøytype og 
-            nøyaktige bompengesatser for å gi deg det komplette bildet av hva reisen din koster.
+            DriveCalc gir deg nøyaktige kostnadsberegninger for bilturer i Norge. 
+            Vår kalkulator inkluderer <strong>oppdaterte drivstoffpriser</strong>, 
+            <strong> bompengesatser</strong> og <strong>kjøretøyspesifikt drivstofforbruk</strong>.
+          </p>
+          
+          <div className={styles.featuresGrid}>
+            <div className={styles.featureCard}>
+              <h3>Nøyaktige beregninger</h3>
+              <p>Få detaljerte kostnadsberegninger basert på din spesifikke rute, biltype og drivstoff.</p>
+            </div>
+            
+            <div className={styles.featureCard}>
+              <h3>Bompenger inkludert</h3>
+              <p>Alle bomstasjoner langs ruten beregnes automatisk med korrekte priser for din biltype.</p>
+            </div>
+            
+            <div className={styles.featureCard}>
+              <h3>Del kostnadene</h3>
+              <p>Enkelt å fordele kjørekostnadene mellom flere passasjerer for samkjøring og turer.</p>
+            </div>
+            
+            <div className={styles.featureCard}>
+              <h3>Reiseruter i hele Norge</h3>
+              <p>Fra Oslo til Bergen, Stavanger til Tromsø, eller hvor som helst i Norge - vi beregner alle kostnader.</p>
+            </div>
+          </div>
+          
+          <h2>Populære ruter i Norge</h2>
+          <div className={styles.popularRoutes}>
+            <ul>
+              <li><strong>Oslo - Bergen:</strong> En av Norges mest kjørte strekninger</li>
+              <li><strong>Oslo - Trondheim:</strong> Beregn kostnader for turen langs E6</li>
+              <li><strong>Stavanger - Kristiansand:</strong> Kystveien med alle bomstasjoner</li>
+              <li><strong>Tromsø - Bodø:</strong> Lang kjøretur i Nord-Norge</li>
+              <li><strong>Oslo - Lillehammer:</strong> Populær helgetur med oppdaterte bompriser</li>
+            </ul>
+          </div>
+          
+          <h2>Om kjørekostnader i Norge</h2>
+          <p>
+            Norge har et omfattende nettverk av bomstasjoner og noen av Europas høyeste drivstoffpriser. 
+            Å beregne de faktiske kostnadene for en bilreise kan være komplisert med bomavgifter 
+            som varierer basert på kjøretøytype, tidspunkt og om du har brikke.
           </p>
           <p>
-            Perfekt for både privatpersoner som vil dele kostnader mellom venner, 
-            og for bedrifter som trenger nøyaktig dokumentasjon av reiseutgifter.
+            DriveCalc er utviklet for å gi deg de mest nøyaktige beregningene for alle typer reiser 
+            i Norge, enten du kjører elbil, hybrid, bensin eller diesel.
           </p>
         </section>
       </div>
