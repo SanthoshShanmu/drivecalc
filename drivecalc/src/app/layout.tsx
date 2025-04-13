@@ -50,10 +50,10 @@ export default function RootLayout({
           content="ca-pub-7726641596892047"
         />
         
-        {/* The AdSense script */}
+        {/* Update the AdSense script with a key prop */}
         <Script 
           id="adsbygoogle-init"
-          strategy="beforeInteractive"
+          strategy="lazyOnload" // Changed from beforeInteractive
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7726641596892047"
           crossOrigin="anonymous"
         />

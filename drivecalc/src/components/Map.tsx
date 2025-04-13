@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import styles from './Map.module.css';
@@ -84,6 +84,47 @@ export default function Map({
     }
   }, [darkMode, mapLoaded]);
   
+  // Memoize addRouteToMap with useCallback - MOVED BEFORE the effect that uses it
+  const addRouteToMap = useCallback(() => {
+    console.log('Adding route to map');
+    
+    // Check if route source already exists
+    if (map.current?.getSource('route')) {
+      console.log('Updating existing route');
+      const source = map.current.getSource('route') as mapboxgl.GeoJSONSource;
+      source.setData({
+        type: 'Feature',
+        properties: {},
+        geometry: routeGeometry
+      });
+    } else {
+      console.log('Creating new route source and layer');
+      // Add new source and layer
+      map.current?.addSource('route', {
+        type: 'geojson',
+        data: {
+          type: 'Feature',
+          properties: {},
+          geometry: routeGeometry
+        }
+      });
+      
+      map.current?.addLayer({
+        id: 'route',
+        type: 'line',
+        source: 'route',
+        layout: {
+          'line-join': 'round',
+          'line-cap': 'round'
+        },
+        paint: {
+          'line-color': darkMode ? '#3291ff' : '#0070f3',
+          'line-width': 6
+        }
+      });
+    }
+  }, [routeGeometry, darkMode]);
+  
   // Now create a separate effect to handle marker updates
   useEffect(() => {
     if (!map.current || !mapLoaded) return;
@@ -162,54 +203,7 @@ export default function Map({
       addRouteToMap();
     }
     
-  }, [origin, destination, stops, tollStations, mapLoaded, routeGeometry]);
-  
-  // Update the showMarkersOnly function
-  const showMarkersOnly = () => {
-    // This function is no longer needed as markers are handled by the useEffect
-    // But we'll keep it for possible future use
-    console.log('Showing markers only');
-  };
-
-  const addRouteToMap = () => {
-    console.log('Adding route to map');
-    
-    // Check if route source already exists
-    if (map.current?.getSource('route')) {
-      console.log('Updating existing route');
-      const source = map.current.getSource('route') as mapboxgl.GeoJSONSource;
-      source.setData({
-        type: 'Feature',
-        properties: {},
-        geometry: routeGeometry
-      });
-    } else {
-      console.log('Creating new route source and layer');
-      // Add new source and layer
-      map.current?.addSource('route', {
-        type: 'geojson',
-        data: {
-          type: 'Feature',
-          properties: {},
-          geometry: routeGeometry
-        }
-      });
-      
-      map.current?.addLayer({
-        id: 'route',
-        type: 'line',
-        source: 'route',
-        layout: {
-          'line-join': 'round',
-          'line-cap': 'round'
-        },
-        paint: {
-          'line-color': darkMode ? '#3291ff' : '#0070f3',
-          'line-width': 6
-        }
-      });
-    }
-  };
+  }, [origin, destination, stops, tollStations, mapLoaded, routeGeometry, addRouteToMap]);
 
   return (
     <div className={styles.mapContainer}>

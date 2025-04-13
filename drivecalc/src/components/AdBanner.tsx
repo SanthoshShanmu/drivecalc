@@ -1,50 +1,58 @@
 "use client";
 
-import React, { useRef, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import styles from './AdBanner.module.css';
 
 interface AdBannerProps {
   adClient: string;
   adSlot: string;
-  adFormat?: 'auto' | 'rectangle' | 'horizontal' | 'vertical';
+  adFormat?: string;
   className?: string;
 }
 
-export default function AdBanner({ 
-  adClient, 
-  adSlot, 
-  adFormat = 'auto',
-  className
-}: AdBannerProps) {
-  const adRef = useRef<HTMLModElement>(null);
-  const initializedRef = useRef(false);
-  
-  useEffect(() => {
-    // Only run this on the client side and only once
-    if (typeof window !== 'undefined' && !initializedRef.current) {
-      try {
-        // Add AdSense ad code
-        const adsbygoogle = (window as any).adsbygoogle || [];
-        adsbygoogle.push({});
-        initializedRef.current = true;
-      } catch (error) {
-        console.error('Error loading AdSense:', error);
-      }
-    }
-  }, []);
+export default function AdBanner({ adClient, adSlot, adFormat = 'auto', className = '' }: AdBannerProps) {
+  const adRef = useRef<HTMLDivElement>(null);
+  const isLoaded = useRef(false);
 
-  return (
-    <div className={`${styles.adContainer} ${className || ''}`}>
-      <div className={styles.adLabel}>Annonse</div>
-      <ins
-        ref={adRef}
-        className="adsbygoogle"
-        style={{ display: 'block' }}
-        data-ad-client={adClient}
-        data-ad-slot={adSlot}
-        data-ad-format={adFormat}
-        data-full-width-responsive="true"
-      />
-    </div>
-  );
+  useEffect(() => {
+    // Skip if already loaded or no ref
+    if (!adRef.current || isLoaded.current) return;
+    
+    // Mark as loaded to prevent duplicate initialization
+    isLoaded.current = true;
+    
+    // Create the ad element
+    const adElement = document.createElement('ins');
+    adElement.className = 'adsbygoogle';
+    adElement.style.display = 'block';
+    adElement.dataset.adClient = adClient;
+    adElement.dataset.adSlot = adSlot;
+    adElement.dataset.adFormat = adFormat;
+    
+    // Clear any existing content
+    if (adRef.current.firstChild) {
+      adRef.current.innerHTML = '';
+    }
+    
+    // Add the element to DOM
+    adRef.current.appendChild(adElement);
+    
+    // Push the ad command
+    try {
+      const adsbygoogle = (window as any).adsbygoogle || [];
+      adsbygoogle.push({});
+    } catch (error) {
+      console.error('Ad loading error:', error);
+    }
+    
+    // Cleanup function
+    return () => {
+      isLoaded.current = false;
+      if (adRef.current) {
+        adRef.current.innerHTML = '';
+      }
+    };
+  }, [adClient, adSlot, adFormat]);
+
+  return <div ref={adRef} className={`${styles.adContainer} ${className}`} />;
 }

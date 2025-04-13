@@ -5,10 +5,17 @@ DriveCalc is a web application that helps you calculate driving costs in Norway.
 ## Features
 
 - Calculate route distance and duration between any two locations in Norway
-- Display interactive maps with route visualization
+- Add multiple stops along your route for complex journeys
+- Display interactive maps with route visualization, including stops and toll stations
 - Calculate fuel costs based on vehicle type and fuel consumption
 - Include toll costs in total travel expenses
-- Support for different vehicle types and fuel options
+- Support for different vehicle types (car, truck) and fuel options (petrol, diesel, electric, hybrid)
+- Round-trip calculation option
+- Split costs among multiple passengers
+- Dark mode support
+- Mobile-responsive design
+- Tips for saving fuel and reducing travel costs
+- Comprehensive FAQ section
 
 ## Technology Stack
 
@@ -18,6 +25,7 @@ DriveCalc is a web application that helps you calculate driving costs in Norway.
 - [Axios](https://axios-http.com/) - HTTP client for API requests
 - [TailwindCSS 4](https://tailwindcss.com/) - CSS framework
 - [TypeScript](https://www.typescriptlang.org/) - Type safety
+- [Cheerio](https://cheerio.js.org/) - HTML parsing for fuel price data
 
 ## Getting Started
 
@@ -40,9 +48,10 @@ cd drivecalc
 npm install
 ```
 
-3. Create a `.env.local` file in the root directory with your Mapbox API key:
+3. Create a `.env.local` file in the root directory with your Mapbox API key and BompengeAPI key:
 ```
 NEXT_PUBLIC_MAPBOX_API_KEY=your_mapbox_api_key
+NEXT_PUBLIC_BOMPENGE_API_KEY=your_bompenge_api_key
 ```
 
 4. Run the development server:
@@ -76,15 +85,27 @@ npm run start
 drivecalc/
 ├── src/
 │   ├── app/          # Next.js app router pages
+│   │   ├── api/      # API routes for fuel prices and toll fees
+│   │   ├── faq/      # FAQ page
+│   │   ├── tips/     # Fuel saving tips page
+│   │   ├── globals.css  # Global styles with theme variables
+│   │   ├── page.tsx  # Main calculator page
+│   │   └── layout.tsx # Root layout with theme detection
 │   ├── components/   # React components
-│   │   ├── CostResults.tsx     # Cost calculation display
-│   │   ├── Map.tsx             # Mapbox implementation
-│   │   ├── RouteSelector.tsx   # Origin/destination selector
-│   │   └── VehicleSelector.tsx # Vehicle/fuel type selector
-│   └── lib/          # Utility functions
-│       ├── fuel.ts    # Fuel calculation utilities
-│       ├── mapbox.ts  # Mapbox integration
-│       └── tolls.ts   # Toll calculation utilities
+│   │   ├── AdBanner.tsx       # Advertisement banner component
+│   │   ├── CostResults.tsx    # Cost calculation display
+│   │   ├── Map.tsx            # Mapbox implementation with route display
+│   │   ├── RouteSelector.tsx  # Origin/destination selector
+│   │   ├── StopList.tsx       # Intermediate stops manager
+│   │   ├── ThemeToggle.tsx    # Dark/light mode toggle
+│   │   └── VehicleSelector.tsx # Vehicle/fuel/passengers selector
+│   ├── lib/          # Utility functions
+│   │   ├── analytics.ts # Google Analytics integration
+│   │   ├── fuel.ts      # Fuel calculation utilities
+│   │   ├── mapbox.ts    # Mapbox integration
+│   │   └── tolls.ts     # Toll calculation utilities
+│   └── types/        # TypeScript type definitions
+│       └── locations.ts # Types for locations and routes
 ├── public/           # Static assets
 └── ...configuration files
 ```

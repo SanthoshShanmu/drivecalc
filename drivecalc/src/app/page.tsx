@@ -1,12 +1,21 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
+
+// Import AdBanner with SSR disabled to prevent hydration issues
+const AdBanner = dynamic(() => import('@/components/AdBanner'), { 
+  ssr: false,
+  loading: () => <div className="ad-placeholder"></div>
+});
+
+// Keep the rest of the imports as they were
 import { fetchRouteFromMapbox } from '@/lib/mapbox';
 import RouteSelector from '@/components/RouteSelector';
 import VehicleSelector from '@/components/VehicleSelector';
 import CostResults from '@/components/CostResults';
 import Map from '@/components/Map';
-import AdBanner from '@/components/AdBanner';
+// Remove the original AdBanner import
 import styles from './page.module.css';
 import { calculateTollFees } from '@/lib/tolls';
 import { calculateFuelConsumption, getFuelPrice, FuelType, VehicleType } from '@/lib/fuel';
@@ -15,6 +24,13 @@ import StopList from '@/components/StopList';
 import { LocationSuggestion } from '@/types/locations';
 
 export default function Home() {
+  // Add state to track client-side rendering
+  const [isClient, setIsClient] = useState(false);
+  
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   const [origin, setOrigin] = useState<LocationSuggestion | null>(null);
   const [destination, setDestination] = useState<LocationSuggestion | null>(null);
   const [stops, setStops] = useState<LocationSuggestion[]>([]);
@@ -23,9 +39,46 @@ export default function Home() {
   const [isRoundTrip, setIsRoundTrip] = useState(false);
   const [passengerCount, setPassengerCount] = useState(1);
   
-  // Create wrapper functions to satisfy type requirements
-  const handleVehicleChange = (vehicle: string) => setVehicle(vehicle as VehicleType);
-  const handleFuelTypeChange = (fuelType: string) => setFuelType(fuelType as FuelType);
+  // Add a formChanged state to track if any input has changed
+  const [formChanged, setFormChanged] = useState(false);
+  
+  // Modify the handlers to track changes without auto-calculating
+  function handleRoundTripChange(value: boolean) {
+    setIsRoundTrip(value);
+    setFormChanged(true); // Mark that the form has changed
+  }
+
+  function handleVehicleChange(vehicle: string) {
+    setVehicle(vehicle as VehicleType);
+    setFormChanged(true);
+  }
+
+  function handleFuelTypeChange(fuelType: string) {
+    setFuelType(fuelType as FuelType);
+    setFormChanged(true);
+  }
+
+  function handlePassengerCountChange(count: number) {
+    setPassengerCount(count);
+    setFormChanged(true);
+  }
+
+  // Also update origin/destination/stops handlers to set formChanged to true
+  function handleSetOrigin(location: LocationSuggestion) {
+    setOrigin(location);
+    setFormChanged(true);
+  }
+
+  function handleSetDestination(location: LocationSuggestion) {
+    setDestination(location);
+    setFormChanged(true);
+  }
+
+  function handleSetStops(stopsOrUpdater: LocationSuggestion[] | ((prev: LocationSuggestion[]) => LocationSuggestion[])) {
+    // Use setStops to handle both direct values and functional updates
+    setStops(stopsOrUpdater);
+    setFormChanged(true);
+  }
   
   const [routeData, setRouteData] = useState<{
     distance: any;
@@ -54,6 +107,7 @@ export default function Home() {
   
   const { trackEvent } = useAnalytics();
   
+  // Update the calculateCosts function to ensure round trip is calculated correctly
   const calculateCosts = async () => {
     if (!origin || !destination) {
       alert('Vennligst velg start- og sluttdestinasjon');
@@ -77,7 +131,7 @@ export default function Home() {
       const routeDetails = await fetchRouteFromMapbox(origin, destination, stops);
       setRouteData(routeDetails);
       
-      // Update toll calculation to include stops
+      // Calculate tolls with isRoundTrip flag
       const tolls = await calculateTollFees(
         routeDetails.waypoints,
         vehicle,
@@ -85,26 +139,27 @@ export default function Home() {
         isRoundTrip
       );
       
-      // 3. Get fuel prices
+      // Get fuel prices
       const fuelPrice = await getFuelPrice(fuelType);
       
-      // 4. Calculate fuel consumption based on distance and vehicle type
+      // Calculate distance and duration with round trip factor
       let distance = routeDetails.distance;
       let duration = routeDetails.duration;
       
-      // If round trip, double the distance and duration
+      // Apply round trip multiplier
       if (isRoundTrip) {
         distance *= 2;
         duration *= 2;
       }
       
+      // Calculate fuel consumption based on adjusted distance
       const fuelConsumption = calculateFuelConsumption(
         distance, 
         vehicle, 
         fuelType
       );
       
-      // 5. Calculate total costs
+      // Calculate total costs
       const fuelCost = fuelConsumption * fuelPrice;
       const tollCost = tolls.totalFee || 0;
       
@@ -148,6 +203,7 @@ export default function Home() {
       });
     } finally {
       setIsCalculating(false);
+      setFormChanged(false); // Reset form changed flag after calculation
     }
   };
 
@@ -161,14 +217,14 @@ export default function Home() {
             <RouteSelector 
               origin={origin} 
               destination={destination}
-              setOrigin={setOrigin}
-              setDestination={setDestination}
+              setOrigin={handleSetOrigin}
+              setDestination={handleSetDestination}
             />
             
             {/* Add the StopList component here */}
             <StopList 
               stops={stops} 
-              setStops={setStops} 
+              setStops={handleSetStops} 
             />
             
             <VehicleSelector
@@ -177,14 +233,14 @@ export default function Home() {
               setVehicle={handleVehicleChange}
               setFuelType={handleFuelTypeChange}
               isRoundTrip={isRoundTrip}
-              setIsRoundTrip={setIsRoundTrip}
+              setIsRoundTrip={handleRoundTripChange}  // Use the new handler
               passengerCount={passengerCount}
-              setPassengerCount={setPassengerCount}
+              setPassengerCount={handlePassengerCountChange}
             />
             
             <button 
               onClick={calculateCosts}
-              disabled={isCalculating || !origin || !destination}
+              disabled={isCalculating || !origin || !destination || !formChanged}
               className={styles.calculateButton}
             >
               {isCalculating ? 'Beregner...' : 'Beregn kostnader'}
@@ -209,7 +265,8 @@ export default function Home() {
           </div>
         </div>
         
-        {!results && (
+        {/* Only render ads on client-side */}
+        {isClient && !results && (
           <AdBanner
             adClient="ca-pub-7726641596892047"
             adSlot="1234567890"
@@ -225,7 +282,6 @@ export default function Home() {
             duration: results.duration,
           }}
           fuelType={fuelType} 
-          isRoundTrip={isRoundTrip}
           passengerCount={passengerCount}
           tollData={{ 
             totalFee: results.tollData?.totalFee || 0, 
@@ -234,7 +290,8 @@ export default function Home() {
           stops={stops}
         />}
         
-        {results && (
+        {/* Only render ads on client-side */}
+        {isClient && results && (
           <AdBanner
             adClient="ca-pub-7726641596892047"
             adSlot="0987654321"

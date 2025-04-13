@@ -4,8 +4,10 @@ import { LocationSuggestion, RouteData } from '../types/locations';
 const MAPBOX_API_URL = 'https://api.mapbox.com';
 const ACCESS_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
-// Search locations by query term
-export async function searchLocations(query: string, country = 'norway') {
+// Update the searchLocations function to restrict results to Norway
+
+// Change the searchLocations function to include country and bbox parameters
+export async function searchLocations(query: string, country = 'no') {
   try {
     if (!ACCESS_TOKEN) {
       console.error('No Mapbox token available in environment variables.');
@@ -19,7 +21,9 @@ export async function searchLocations(query: string, country = 'norway') {
       {
         params: {
           access_token: ACCESS_TOKEN,
-          limit: 5
+          limit: 5,
+          country: country,  // ISO code for Norway is 'no'
+          bbox: '4.5,57.5,31.5,71.5'  // Bounding box for Norway
         }
       }
     );
