@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import styles from './RouteSelector.module.css';
 import { LocationSuggestion } from '@/types/locations';
 import { searchLocations } from '@/lib/mapbox';
+import { useLanguage } from '@/context/LanguageContext';
 
 // Update props to use LocationSuggestion objects
 type RouteSelectorProps = {
@@ -19,6 +20,8 @@ export default function RouteSelector({
   setOrigin,
   setDestination
 }: RouteSelectorProps) {
+  const { t } = useLanguage();
+  
   // Use the name property from LocationSuggestion in the input fields
   const [originInput, setOriginInput] = useState(origin?.name || '');
   const [destinationInput, setDestinationInput] = useState(destination?.name || '');
@@ -101,7 +104,7 @@ export default function RouteSelector({
   return (
     <div className={styles.container}>
       <div className={styles.inputGroup}>
-        <label htmlFor="origin">Fra:</label>
+        <label htmlFor="origin">{t('route.from')}</label>
         <div className={styles.autocompleteContainer}>
           <input
             id="origin"
@@ -110,7 +113,7 @@ export default function RouteSelector({
             className={styles.input}
             value={originInput}
             onChange={(e) => setOriginInput(e.target.value)}
-            placeholder="Skriv inn startsted"
+            placeholder={t('route.fromPlaceholder')}
             onFocus={() => {
               if (!originClickRef.current && originInput && originInput !== origin?.name) {
                 searchLocations(originInput).then(setOriginSuggestions);
@@ -147,7 +150,7 @@ export default function RouteSelector({
       </div>
       
       <div className={styles.inputGroup}>
-        <label htmlFor="destination">Til:</label>
+        <label htmlFor="destination">{t('route.to')}</label>
         <div className={styles.autocompleteContainer}>
           <input
             id="destination"
@@ -156,7 +159,7 @@ export default function RouteSelector({
             className={styles.input}
             value={destinationInput}
             onChange={(e) => setDestinationInput(e.target.value)}
-            placeholder="Skriv inn destinasjon"
+            placeholder={t('route.toPlaceholder')}
             onFocus={() => {
               if (!destinationClickRef.current && destinationInput && destinationInput !== destination?.name) {
                 searchLocations(destinationInput).then(setDestinationSuggestions);

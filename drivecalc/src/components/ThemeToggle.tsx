@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import styles from './ThemeToggle.module.css';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function ThemeToggle() {
   // Initialize state but don't set a default value
   const [darkMode, setDarkMode] = useState<boolean | null>(null);
+  const { t } = useLanguage();
 
   // Initialize theme state after component mounts - client-side only
   useEffect(() => {
@@ -40,7 +42,7 @@ export default function ThemeToggle() {
     <button 
       className={styles.toggle}
       onClick={toggleTheme}
-      aria-label={darkMode ? 'Bytt til lys modus' : 'Bytt til mørk modus'}
+      aria-label={darkMode ? t('theme.light') : t('theme.dark')}
     >
       {darkMode ? '☀️' : '🌙'}
     </button>

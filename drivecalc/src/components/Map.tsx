@@ -5,6 +5,7 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import styles from './Map.module.css';
 import { LocationSuggestion } from '@/types/locations';
+import { useLanguage } from '@/context/LanguageContext';
 
 // Set your Mapbox token
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || '';
@@ -28,6 +29,7 @@ export default function Map({
   stops = [], // Add stops with default empty array
   tollStations = [] 
 }: MapProps) {
+  const { t } = useLanguage();
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
@@ -151,7 +153,7 @@ export default function Map({
       stops.forEach((stop, index) => {
         if (stop.lat && stop.lon) {
           const popup = new mapboxgl.Popup({ offset: 25 })
-            .setHTML(`<h3>Mellomstopp ${index + 1}</h3><p>${stop.name}</p>`);
+            .setHTML(`<h3>${t('map.stop')} ${index + 1}</h3><p>${stop.name}</p>`);
             
           new mapboxgl.Marker({ color: '#9C27B0' }) // Purple for stops
             .setLngLat([stop.lon, stop.lat])
@@ -178,7 +180,7 @@ export default function Map({
     if (tollStations && tollStations.length > 0) {
       tollStations.forEach(station => {
         const popup = new mapboxgl.Popup({ offset: 25 })
-          .setHTML(`<h3>${station.name}</h3><p>Avgift: ${station.fee.toFixed(2)} kr</p>`);
+          .setHTML(`<h3>${station.name}</h3><p>${t('map.fee')}: ${station.fee.toFixed(2)} kr</p>`);
           
         new mapboxgl.Marker({ color: '#ffc107' })
           .setLngLat([station.location.lon, station.location.lat])
@@ -203,7 +205,7 @@ export default function Map({
       addRouteToMap();
     }
     
-  }, [origin, destination, stops, tollStations, mapLoaded, routeGeometry, addRouteToMap]);
+  }, [origin, destination, stops, tollStations, mapLoaded, routeGeometry, addRouteToMap, t]);
 
   return (
     <div className={styles.mapContainer}>

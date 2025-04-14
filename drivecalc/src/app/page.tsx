@@ -1,21 +1,22 @@
 "use client";
 
+// Import the useLanguage hook at the top
+import { useLanguage } from '@/context/LanguageContext';
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 
-// Import AdBanner with SSR disabled to prevent hydration issues
+// Rest of the imports remain the same
 const AdBanner = dynamic(() => import('@/components/AdBanner'), { 
   ssr: false,
   loading: () => <div className="ad-placeholder"></div>
 });
 
-// Keep the rest of the imports as they were
+// Keep the other imports
 import { fetchRouteFromMapbox } from '@/lib/mapbox';
 import RouteSelector from '@/components/RouteSelector';
 import VehicleSelector from '@/components/VehicleSelector';
 import CostResults from '@/components/CostResults';
 import Map from '@/components/Map';
-// Remove the original AdBanner import
 import styles from './page.module.css';
 import { calculateTollFees } from '@/lib/tolls';
 import { calculateFuelConsumption, getFuelPrice, FuelType, VehicleType } from '@/lib/fuel';
@@ -24,6 +25,9 @@ import StopList from '@/components/StopList';
 import { LocationSuggestion } from '@/types/locations';
 
 export default function Home() {
+  // Get translation function
+  const { t } = useLanguage();
+
   // Add state to track client-side rendering
   const [isClient, setIsClient] = useState(false);
   
@@ -31,21 +35,21 @@ export default function Home() {
     setIsClient(true);
   }, []);
 
+  // Rest of your state variables remain the same
   const [origin, setOrigin] = useState<LocationSuggestion | null>(null);
   const [destination, setDestination] = useState<LocationSuggestion | null>(null);
+  // Rest of your code unchanged
   const [stops, setStops] = useState<LocationSuggestion[]>([]);
   const [vehicle, setVehicle] = useState<VehicleType>('car');
   const [fuelType, setFuelType] = useState<FuelType>('bensin');
   const [isRoundTrip, setIsRoundTrip] = useState(false);
   const [passengerCount, setPassengerCount] = useState(1);
-  
-  // Add a formChanged state to track if any input has changed
   const [formChanged, setFormChanged] = useState(false);
   
-  // Modify the handlers to track changes without auto-calculating
+  // Keep all the handlers unchanged
   function handleRoundTripChange(value: boolean) {
     setIsRoundTrip(value);
-    setFormChanged(true); // Mark that the form has changed
+    setFormChanged(true);
   }
 
   function handleVehicleChange(vehicle: string) {
@@ -63,7 +67,6 @@ export default function Home() {
     setFormChanged(true);
   }
 
-  // Also update origin/destination/stops handlers to set formChanged to true
   function handleSetOrigin(location: LocationSuggestion) {
     setOrigin(location);
     setFormChanged(true);
@@ -75,11 +78,11 @@ export default function Home() {
   }
 
   function handleSetStops(stopsOrUpdater: LocationSuggestion[] | ((prev: LocationSuggestion[]) => LocationSuggestion[])) {
-    // Use setStops to handle both direct values and functional updates
     setStops(stopsOrUpdater);
     setFormChanged(true);
   }
   
+  // Keep the other state variables
   const [routeData, setRouteData] = useState<{
     distance: any;
     duration: any;
@@ -210,7 +213,7 @@ export default function Home() {
   return (
     <main className={styles.main}>
       <div className={styles.container}>
-        <h1 className={styles.title}>DriveCalc - Beregn kjørekostnader i Norge</h1>
+        <h1 className={styles.title}>{t('main.title')}</h1>
         
         <div className={styles.grid}>
           <div className={styles.formContainer}>
@@ -221,7 +224,6 @@ export default function Home() {
               setDestination={handleSetDestination}
             />
             
-            {/* Add the StopList component here */}
             <StopList 
               stops={stops} 
               setStops={handleSetStops} 
@@ -233,7 +235,7 @@ export default function Home() {
               setVehicle={handleVehicleChange}
               setFuelType={handleFuelTypeChange}
               isRoundTrip={isRoundTrip}
-              setIsRoundTrip={handleRoundTripChange}  // Use the new handler
+              setIsRoundTrip={handleRoundTripChange}
               passengerCount={passengerCount}
               setPassengerCount={handlePassengerCountChange}
             />
@@ -243,12 +245,11 @@ export default function Home() {
               disabled={isCalculating || !origin || !destination || !formChanged}
               className={styles.calculateButton}
             >
-              {isCalculating ? 'Beregner...' : 'Beregn kostnader'}
+              {isCalculating ? t('main.calculating') : t('main.calculate')}
             </button>
           </div>
           
           <div className={styles.mapContainer}>
-            {/* Show map at all times */}
             <Map 
               routeGeometry={routeData?.geometry}
               origin={origin ? {
@@ -265,7 +266,6 @@ export default function Home() {
           </div>
         </div>
         
-        {/* Only render ads on client-side */}
         {isClient && !results && (
           <AdBanner
             adClient="ca-pub-7726641596892047"
@@ -290,7 +290,6 @@ export default function Home() {
           stops={stops}
         />}
         
-        {/* Only render ads on client-side */}
         {isClient && results && (
           <AdBanner
             adClient="ca-pub-7726641596892047"
@@ -300,70 +299,62 @@ export default function Home() {
           />
         )}
         
-        {/* SEO-friendly content */}
+        {/* SEO-friendly content - updated with translations */}
         <section className={styles.infoSection}>
-          <h2>Beregn kjørekostnader og bomavgifter i Norge</h2>
+          <h2>{t('main.seo.heading1')}</h2>
           <p>
-            DriveCalc er Norges mest nøyaktige <strong>bompenge kalkulator</strong> og verktøy for å 
-            <strong> beregne kjørekostnad</strong> på norske veier. Vi oppdaterer kontinuerlig våre 
-            <strong> drivstoffpriser</strong> og bomavgifter for å sikre at du alltid får de mest nøyaktige beregningene.
+            {t('main.seo.paragraph1')}
           </p>
           
           <div className={styles.featuresGrid}>
             <div className={styles.featureCard}>
-              <h3>Nøyaktige beregninger</h3>
-              <p>Få detaljerte kostnadsberegninger basert på din spesifikke rute, biltype og drivstoff.</p>
+              <h3>{t('main.feature1.title')}</h3>
+              <p>{t('main.feature1.text')}</p>
             </div>
             
             <div className={styles.featureCard}>
-              <h3>Bompenger inkludert</h3>
-              <p>Alle bomstasjoner langs ruten beregnes automatisk med korrekte priser for din biltype.</p>
+              <h3>{t('main.feature2.title')}</h3>
+              <p>{t('main.feature2.text')}</p>
             </div>
             
             <div className={styles.featureCard}>
-              <h3>Del kostnadene</h3>
-              <p>Enkelt å fordele kjørekostnadene mellom flere passasjerer for samkjøring og turer.</p>
+              <h3>{t('main.feature3.title')}</h3>
+              <p>{t('main.feature3.text')}</p>
             </div>
             
             <div className={styles.featureCard}>
-              <h3>Reiseruter i hele Norge</h3>
-              <p>Fra Oslo til Bergen, Stavanger til Tromsø, eller hvor som helst i Norge - vi beregner alle kostnader.</p>
+              <h3>{t('main.feature4.title')}</h3>
+              <p>{t('main.feature4.text')}</p>
             </div>
           </div>
           
-          <h2>Hvorfor velge vår bompenge kalkulator?</h2>
+          <h2>{t('main.whyUs.title')}</h2>
           <p>
-            Vår avanserte bompenge kalkulator tar hensyn til alle bomstasjoner langs ruten din, 
-            inkludert rabatter for elbil, AutoPASS og tidspunkter på døgnet. Vi oppdaterer 
-            kontinuerlig våre data for å sikre at du alltid får de mest nøyaktige beregningene.
+            {t('main.whyUs.text')}
           </p>
           
-          <h2>Oppdaterte drivstoffkostnader</h2>
+          <h2>{t('main.fuelCosts.title')}</h2>
           <p>
-            DriveCalc henter daglig oppdaterte bensinpriser, dieselpriser og el-priser fra hele Norge. 
-            Vår kalkulator beregner nøyaktig drivstofforbruk basert på distanse, kjøretøytype og kjøremønster.
+            {t('main.fuelCosts.text')}
           </p>
           
-          <h2>Populære ruter i Norge</h2>
+          <h2>{t('main.routes.title')}</h2>
           <div className={styles.popularRoutes}>
             <ul>
-              <li><strong>Oslo - Bergen:</strong> En av Norges mest kjørte strekninger</li>
-              <li><strong>Oslo - Trondheim:</strong> Beregn kostnader for turen langs E6</li>
-              <li><strong>Stavanger - Kristiansand:</strong> Kystveien med alle bomstasjoner</li>
-              <li><strong>Tromsø - Bodø:</strong> Lang kjøretur i Nord-Norge</li>
-              <li><strong>Oslo - Lillehammer:</strong> Populær helgetur med oppdaterte bompriser</li>
+              <li><strong>Oslo - Bergen:</strong> {t('main.routes.oslo-bergen')}</li>
+              <li><strong>Oslo - Trondheim:</strong> {t('main.routes.oslo-trondheim')}</li>
+              <li><strong>Stavanger - Kristiansand:</strong> {t('main.routes.stavanger-kristiansand')}</li>
+              <li><strong>Tromsø - Bodø:</strong> {t('main.routes.tromso-bodo')}</li>
+              <li><strong>Oslo - Lillehammer:</strong> {t('main.routes.oslo-lillehammer')}</li>
             </ul>
           </div>
           
-          <h2>Om kjørekostnader i Norge</h2>
+          <h2>{t('main.about.title')}</h2>
           <p>
-            Norge har et omfattende nettverk av bomstasjoner og noen av Europas høyeste drivstoffpriser. 
-            Å beregne de faktiske kostnadene for en bilreise kan være komplisert med bomavgifter 
-            som varierer basert på kjøretøytype, tidspunkt og om du har brikke.
+            {t('main.about.paragraph1')}
           </p>
           <p>
-            DriveCalc er utviklet for å gi deg de mest nøyaktige beregningene for alle typer reiser 
-            i Norge, enten du kjører elbil, hybrid, bensin eller diesel.
+            {t('main.about.paragraph2')}
           </p>
         </section>
       </div>

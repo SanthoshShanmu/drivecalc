@@ -1,17 +1,24 @@
-import React from 'react';
 import Link from 'next/link';
 import styles from './page.module.css';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 export const metadata = {
   title: 'FAQ - Vanlige spørsmål om kjørekostnader i Norge | DriveCalc',
   description: 'Svar på vanlige spørsmål om beregning av drivstoff, bompenger og andre kjørekostnader for bilturer i Norge.',
   keywords: 'kjørekostnader FAQ, bompenger spørsmål, drivstoffpriser Norge, biltur kostnader',
+  alternates: {
+    languages: {
+      'en': '/en/faq',
+      'no': '/faq',
+    },
+  },
 };
 
 export default function FAQPage() {
   return (
     <main className={styles.main}>
       <div className={styles.container}>
+        <LanguageSwitcher language="no" />
         <h1 className={styles.title}>Vanlige spørsmål om kjørekostnader</h1>
         
         <div className={styles.content}>

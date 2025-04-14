@@ -1,7 +1,10 @@
+"use client";
+
 import React, { useState, useRef } from 'react';
 import styles from './StopList.module.css';
 import { LocationSuggestion } from '@/types/locations';
 import { searchLocations } from '@/lib/mapbox';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface StopListProps {
   stops: LocationSuggestion[];
@@ -9,6 +12,7 @@ interface StopListProps {
 }
 
 export default function StopList({ stops, setStops }: StopListProps) {
+  const { t } = useLanguage();
   const [suggestions, setSuggestions] = useState<Array<{index: number, suggestions: LocationSuggestion[]}>>([]);
   const [isLoading, setIsLoading] = useState<number[]>([]);
   const clickRefs = useRef<boolean[]>([]);
@@ -77,7 +81,7 @@ export default function StopList({ stops, setStops }: StopListProps) {
 
   return (
     <div className={styles.stopsContainer}>
-      <h3>Mellomstopp</h3>
+      <h3>{t('stops.title')}</h3>
       
       {stops.map((stop, index) => (
         <div key={index} className={styles.stopItem}>
@@ -86,7 +90,7 @@ export default function StopList({ stops, setStops }: StopListProps) {
             <input
               type="text"
               value={stop.name}
-              placeholder="Søk etter sted..."
+              placeholder={t('stops.searchPlaceholder')}
               onChange={(e) => {
                 updateStop(index, { ...stop, name: e.target.value });
                 handleSearch(index, e.target.value);
@@ -132,7 +136,7 @@ export default function StopList({ stops, setStops }: StopListProps) {
           <button 
             onClick={() => removeStop(index)}
             className={styles.removeStopButton}
-            aria-label="Fjern stopp"
+            aria-label={t('stops.remove')}
           >
             ✕
           </button>
@@ -143,7 +147,7 @@ export default function StopList({ stops, setStops }: StopListProps) {
         onClick={addStop}
         className={styles.addStopButton}
       >
-        + Legg til mellomstopp
+        {t('stops.add')}
       </button>
     </div>
   );

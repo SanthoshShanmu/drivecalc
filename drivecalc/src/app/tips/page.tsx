@@ -1,15 +1,23 @@
 import styles from './page.module.css';
 import Link from 'next/link';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 export const metadata = {
   title: 'Drivstoffsparing tips | DriveCalc',
   description: 'Effektive tips for å spare drivstoff og redusere dine kjørekostnader i Norge',
   keywords: 'drivstoffsparing, spareråd, kjøretips, økonomisk kjøring, bilhold, drivstofføkonomi',
+  alternates: {
+    languages: {
+      'en': '/en/tips',
+      'no': '/tips',
+    },
+  },
 };
 
 export default function FuelSavingTips() {
   return (
     <main className={styles.main}>
+      <LanguageSwitcher language="no" />
       <div className={styles.container}>
         <h1 className={styles.title}>Tips for å spare drivstoff</h1>
         

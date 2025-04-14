@@ -1,5 +1,8 @@
+"use client";
+
 import React from 'react';
 import styles from './CostResults.module.css';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface CostResultsProps {
   routeData: {
@@ -41,6 +44,8 @@ export default function CostResults({
   passengerCount,
   stops,
 }: CostResultsProps) {
+  const { t } = useLanguage();
+  
   // Get the appropriate units based on fuel type
   const getConsumptionUnit = () => {
     return fuelType === 'elbil' ? 'kWh' : 'liter';
@@ -53,35 +58,37 @@ export default function CostResults({
   // Calculate cost per passenger
   const costPerPassenger = totalCost / passengerCount;
 
+  // Format time
+  const formatTime = (duration: number) => {
+    if (duration >= 86400) { // 60 * 60 * 24
+      return `${Math.round(duration / 86400)} ${t('time.days')}`;
+    } else if (duration >= 3600) {
+      return `${Math.round(duration / 3600)} ${t('time.hours')}`;
+    } else {
+      return `${Math.round(duration / 60)} ${t('time.minutes')}`;
+    }
+  };
+
   return (
     <div className={styles.resultsContainer}>
       <h2>
-        Kostnadsberegning
-        {isRoundTrip && <span className={styles.roundTripBadge}>Tur-retur</span>}
+        {t('results.title')}
+        {isRoundTrip && <span className={styles.roundTripBadge}>{t('results.roundTrip')}</span>}
       </h2>
       
       <div className={styles.summary}>
         <div className={styles.summaryItem}>
-          <span className={styles.label}>Avstand</span>
+          <span className={styles.label}>{t('results.distance')}</span>
           <span className={styles.value}>{(routeData.distance / 1000).toFixed(1)} km</span>
         </div>
         <div className={styles.summaryItem}>
-          <span className={styles.label}>Estimert kjøretid</span>
+          <span className={styles.label}>{t('results.time')}</span>
           <span className={styles.value}>
-            {(() => {
-              const duration = routeData.duration; // in seconds
-              if (duration >= 86400) { // 60 * 60 * 24
-                return `${Math.round(duration / 86400)} dager`;
-              } else if (duration >= 3600) {
-                return `${Math.round(duration / 3600)} timer`;
-              } else {
-                return `${Math.round(duration / 60)} minutter`;
-              }
-            })()}
+            {formatTime(routeData.duration)}
           </span>
         </div>
         <div className={styles.summaryItem}>
-          <span className={styles.label}>Forbruk</span>
+          <span className={styles.label}>{t('results.consumption')}</span>
           <span className={styles.value}>{fuelConsumption.toFixed(1)} {getConsumptionUnit()}</span>
         </div>
       </div>
@@ -89,22 +96,22 @@ export default function CostResults({
       <div className={styles.costs}>
         <div className={styles.costItem}>
           <div className={styles.costHeader}>
-            <h3>Drivstoffkostnader</h3>
+            <h3>{t('results.fuelCosts')}</h3>
             <span className={styles.costAmount}>{fuelCost.toFixed(2)} kr</span>
           </div>
           <div className={styles.costDetails}>
             <div className={styles.costDetail}>
-              <span>Forbruk:</span>
+              <span>{t('results.consumption.word')}</span>
               <span>{fuelConsumption.toFixed(1)} {getConsumptionUnit()}</span>
             </div>
             <div className={styles.costDetail}>
-              <span>Pris:</span>
+              <span>{t('results.price')}</span>
               <span>{(fuelCost / fuelConsumption).toFixed(2)} {getFuelCostUnit()}</span>
             </div>
             {isRoundTrip && (
               <div className={styles.costDetail}>
-                <span>Beregnet for:</span>
-                <span>Tur-retur</span>
+                <span>{t('results.calculatedFor')}</span>
+                <span>{t('results.roundTrip')}</span>
               </div>
             )}
           </div>
@@ -112,7 +119,7 @@ export default function CostResults({
         
         <div className={styles.costItem}>
           <div className={styles.costHeader}>
-            <h3>Bomkostnader</h3>
+            <h3>{t('results.tollCosts')}</h3>
             <span className={styles.costAmount}>{tollData.totalFee.toFixed(2)} kr</span>
           </div>
           <div className={styles.costDetails}>
@@ -120,8 +127,8 @@ export default function CostResults({
             {tollData.stations && tollData.stations.length > 0 ? (
               <>
                 <div className={styles.tollStationHeader}>
-                  <span>Bomstasjon</span>
-                  <span>Avgift</span>
+                  <span>{t('results.tollStation')}</span>
+                  <span>{t('results.fee')}</span>
                 </div>
                 {tollData.stations.map((station, index) => (
                   <div key={index} className={styles.costDetail}>
@@ -131,13 +138,13 @@ export default function CostResults({
                 ))}
                 {isRoundTrip && (
                   <div className={styles.costDetail + ' ' + styles.roundTripInfo}>
-                    <span>Prisene inkluderer retur</span>
+                    <span>{t('results.pricesIncludeReturn')}</span>
                   </div>
                 )}
               </>
             ) : (
               <div className={styles.costDetail}>
-                <span>Ingen bomstasjoner på denne ruten</span>
+                <span>{t('results.noTolls')}</span>
               </div>
             )}
           </div>
@@ -145,20 +152,20 @@ export default function CostResults({
         
         <div className={`${styles.costItem} ${styles.totalCost}`}>
           <div className={styles.costHeader}>
-            <h3>Totale kjørekostnader</h3>
+            <h3>{t('results.totalCosts')}</h3>
             <span className={styles.costAmount}>{totalCost.toFixed(2)} kr</span>
           </div>
           <div className={styles.costDetails}>
             {isRoundTrip && (
               <div className={styles.costDetail}>
-                <span>Beregnet for tur-retur reise</span>
+                <span>{t('results.calculatedFor')} {t('results.roundTrip').toLowerCase()}</span>
               </div>
             )}
             {passengerCount > 1 && (
               <div className={styles.costSplit}>
                 <div className={styles.costSplitHeader}>
-                  <span className={styles.splitBadge}>{passengerCount} personer</span>
-                  <span>DriveCalc kostnad per person:</span>
+                  <span className={styles.splitBadge}>{passengerCount} {t('results.persons')}</span>
+                  <span>{t('results.costPerPerson')}</span>
                   <span className={styles.splitAmount}>{costPerPassenger.toFixed(2)} kr</span>
                 </div>
               </div>
@@ -170,7 +177,7 @@ export default function CostResults({
       {/* Add stops information if any */}
       {stops.length > 0 && (
         <div className={styles.stopsInfo}>
-          <h3>Mellomstoppesteder</h3>
+          <h3>{t('results.stopovers')}</h3>
           <div className={styles.stopsList}>
             {stops.map((stop, index) => (
               <div key={index} className={styles.stopItem}>

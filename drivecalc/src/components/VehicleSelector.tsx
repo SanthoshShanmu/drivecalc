@@ -1,5 +1,6 @@
 "use client";
 
+import { useLanguage } from '@/context/LanguageContext';
 import styles from './VehicleSelector.module.css';
 
 type VehicleSelectorProps = {
@@ -23,6 +24,7 @@ export default function VehicleSelector({
   passengerCount,
   setPassengerCount
 }: VehicleSelectorProps) {
+  const { t } = useLanguage();
   
   // Create a handler for vehicle type changes that ensures compatible fuel types
   const handleVehicleChange = (newVehicle: string) => {
@@ -37,57 +39,57 @@ export default function VehicleSelector({
   
   return (
     <div className={styles.container}>
-      <h2>Velg kjøretøy</h2>
+      <h2>{t('vehicle.title')}</h2>
       
       <div className={styles.selectionGroup}>
-        <label>Kjøretøytype:</label>
+        <label>{t('vehicle.type')}</label>
         <div className={styles.options}>
           <button
             className={`${styles.option} ${vehicle === 'car' ? styles.active : ''}`}
             onClick={() => handleVehicleChange('car')}
           >
             <span className={styles.icon}>🚗</span>
-            Personbil
+            {t('vehicle.car')}
           </button>
           <button
             className={`${styles.option} ${vehicle === 'truck' ? styles.active : ''}`}
             onClick={() => handleVehicleChange('truck')}
           >
             <span className={styles.icon}>🚚</span>
-            Lastebil
+            {t('vehicle.truck')}
           </button>
         </div>
       </div>
       
       <div className={styles.selectionGroup}>
-        <label>Drivstofftype:</label>
+        <label>{t('vehicle.fuelType')}</label>
         <div className={styles.options}>
           <button
             className={`${styles.option} ${fuelType === 'bensin' ? styles.active : ''}`}
             onClick={() => setFuelType('bensin')}
             disabled={vehicle === 'truck'}
           >
-            Bensin
+            {t('vehicle.petrol')}
           </button>
           <button
             className={`${styles.option} ${fuelType === 'diesel' ? styles.active : ''}`}
             onClick={() => setFuelType('diesel')}
           >
-            Diesel
+            {t('vehicle.diesel')}
           </button>
           <button
             className={`${styles.option} ${fuelType === 'elbil' ? styles.active : ''}`}
             onClick={() => setFuelType('elbil')}
             disabled={vehicle === 'truck'}
           >
-            Elbil
+            {t('vehicle.electric')}
           </button>
           <button
             className={`${styles.option} ${fuelType === 'hybrid' ? styles.active : ''}`}
             onClick={() => setFuelType('hybrid')}
             disabled={vehicle === 'truck'}
           >
-            Hybrid
+            {t('vehicle.hybrid')}
           </button>
         </div>
       </div>
@@ -101,17 +103,17 @@ export default function VehicleSelector({
               onChange={(e) => setIsRoundTrip(e.target.checked)}
               className={styles.checkbox}
             />
-            <span className={styles.checkboxText}>Tur-retur</span>
+            <span className={styles.checkboxText}>{t('vehicle.roundTrip')}</span>
           </label>
         </div>
         
         <div className={styles.passengerCount}>
-          <label htmlFor="passengerCount">Antall passasjerer:</label>
+          <label htmlFor="passengerCount">{t('vehicle.passengers')}</label>
           <div className={styles.counterContainer}>
             <button 
               className={styles.counterButton}
               onClick={() => setPassengerCount(Math.max(1, passengerCount - 1))}
-              aria-label="Reduser antall passasjerer"
+              aria-label="-"
             >
               -
             </button>
@@ -127,7 +129,7 @@ export default function VehicleSelector({
             <button 
               className={styles.counterButton}
               onClick={() => setPassengerCount(Math.min(9, passengerCount + 1))}
-              aria-label="Øk antall passasjerer"
+              aria-label="+"
             >
               +
             </button>
