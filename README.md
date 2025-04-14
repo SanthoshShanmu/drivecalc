@@ -12,6 +12,7 @@ DriveCalc is a web application that helps you calculate driving costs in Norway.
 - Support for different vehicle types (car, truck) and fuel options (petrol, diesel, electric, hybrid)
 - Round-trip calculation option
 - Split costs among multiple passengers
+- **Multilingual support (Norwegian and English)**
 - Dark mode support
 - Mobile-responsive design
 - Tips for saving fuel and reducing travel costs
@@ -84,29 +85,43 @@ npm run start
 ```
 drivecalc/
 ├── src/
-│   ├── app/          # Next.js app router pages
-│   │   ├── api/      # API routes for fuel prices and toll fees
-│   │   ├── faq/      # FAQ page
-│   │   ├── tips/     # Fuel saving tips page
-│   │   ├── globals.css  # Global styles with theme variables
-│   │   ├── page.tsx  # Main calculator page
-│   │   └── layout.tsx # Root layout with theme detection
-│   ├── components/   # React components
+│   ├── app/                   # Next.js app router pages
+│   │   ├── api/               # API routes for fuel prices and toll fees
+│   │   ├── en/                # English version pages
+│   │   │   ├── page.tsx       # English main calculator page
+│   │   │   ├── faq/           # English FAQ page
+│   │   │   └── tips/          # English fuel saving tips page
+│   │   ├── faq/               # Norwegian FAQ page
+│   │   ├── tips/              # Norwegian fuel saving tips page
+│   │   ├── globals.css        # Global styles with theme variables
+│   │   ├── layout.tsx         # Root layout with theme detection
+│   │   ├── page.tsx           # Main calculator page (Norwegian)
+│   │   ├── page.module.css    # Styles for main page
+│   │   ├── robots.ts          # SEO robots configuration
+│   │   └── sitemap.ts         # Dynamic sitemap generation
+│   ├── components/            # React components
 │   │   ├── AdBanner.tsx       # Advertisement banner component
 │   │   ├── CostResults.tsx    # Cost calculation display
+│   │   ├── Footer.tsx         # Site footer with language-aware links
+│   │   ├── Header.tsx         # Site header with navigation and language
+│   │   ├── LanguageSwitcher.tsx # Language context initializer
+│   │   ├── LanguageToggle.tsx # Language toggle UI component
+│   │   ├── LanguageToggleClient.tsx # Client-side language toggle
 │   │   ├── Map.tsx            # Mapbox implementation with route display
 │   │   ├── RouteSelector.tsx  # Origin/destination selector
 │   │   ├── StopList.tsx       # Intermediate stops manager
 │   │   ├── ThemeToggle.tsx    # Dark/light mode toggle
 │   │   └── VehicleSelector.tsx # Vehicle/fuel/passengers selector
-│   ├── lib/          # Utility functions
-│   │   ├── analytics.ts # Google Analytics integration
-│   │   ├── fuel.ts      # Fuel calculation utilities
-│   │   ├── mapbox.ts    # Mapbox integration
-│   │   └── tolls.ts     # Toll calculation utilities
-│   └── types/        # TypeScript type definitions
-│       └── locations.ts # Types for locations and routes
-├── public/           # Static assets
+│   ├── context/               # React context providers
+│   │   └── LanguageContext.tsx # Language state and translations
+│   ├── lib/                   # Utility functions
+│   │   ├── analytics.ts       # Google Analytics integration
+│   │   ├── fuel.ts            # Fuel calculation utilities
+│   │   ├── mapbox.ts          # Mapbox integration
+│   │   └── tolls.ts           # Toll calculation utilities
+│   └── types/                 # TypeScript type definitions
+│       └── locations.ts       # Types for locations and routes
+├── public/                    # Static assets
 └── ...configuration files
 ```
 
