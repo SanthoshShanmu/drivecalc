@@ -13,7 +13,7 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
   title: 'DriveCalc | Kjørekostnader Norge - Calculate Driving Costs in Norway',
   description: 'Nøyaktig beregning av kjørekostnader i Norge inkludert drivstoff, bompenger og avgifter. Accurate calculation of driving costs in Norway including fuel, tolls and fees.',
-  keywords: 'beregne kjørekostnad, bompenge kalkulator, bensinpris, dieselpris, kjøregodtgjørelse, kjørekostnader Norge, bilkostnader, bompengeberegner, drivstoffpriser Norge, kjørekostnader, bompenger, drivstoffpriser, Norge, rute, reiseplanlegger, kostnadsberegner, drivecalc, biløkonomi, biltur, bilreise, bensinpriser, toll costs, driving expenses, Norway travel, fuel calculator, road trip Norway, toll roads Norway',
+  keywords: 'beregne kjørekostnad, kjørekostnad kalkulator, bompenge kalkulator, bensinpris, dieselpris, kjøregodtgjørelse, kjørekostnader Norge, bilkostnader, bompengeberegner, drivstoffpriser Norge, kjørekostnader, bompenger, drivstoffpriser, Norge, rute, reiseplanlegger, kostnadsberegner, drivecalc, biløkonomi, biltur, bilreise, bensinpriser, toll costs, driving expenses, Norway travel, fuel calculator, road trip Norway, toll roads Norway',
   authors: [{ name: 'DriveCalc Team' }],
   robots: 'index, follow',
   metadataBase: new URL('https://drivecalc.no'),
@@ -87,6 +87,18 @@ export default function RootLayout({
               })();
             `,
           }}
+        />
+
+        {/* CMP Banner Script - add this */}
+        <Script
+          id="cmp-banner"
+          type="text/javascript"
+          data-cmp-ab="1"
+          src="https://cdn.consentmanager.net/delivery/autoblocking/3934f3f4d2308.js"
+          data-cmp-host="a.delivery.consentmanager.net" 
+          data-cmp-cdn="cdn.consentmanager.net"
+          data-cmp-codesrc="16"
+          strategy="beforeInteractive"
         />
         
         {/* Structured data for English and Norwegian */}
