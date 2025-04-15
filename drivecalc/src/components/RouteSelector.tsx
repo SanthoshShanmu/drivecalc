@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import styles from './RouteSelector.module.css';
 import { LocationSuggestion } from '@/types/locations';
-import { searchLocations } from '@/lib/mapbox';
+import { searchLocations, retrieveLocationDetails } from '@/lib/mapbox';
 import { useLanguage } from '@/context/LanguageContext';
 
 // Update props to use LocationSuggestion objects
@@ -22,9 +22,9 @@ export default function RouteSelector({
 }: RouteSelectorProps) {
   const { t } = useLanguage();
   
-  // Use the name property from LocationSuggestion in the input fields
-  const [originInput, setOriginInput] = useState(origin?.name || '');
-  const [destinationInput, setDestinationInput] = useState(destination?.name || '');
+  // Use the place_name property instead of name for display
+  const [originInput, setOriginInput] = useState(origin?.place_name || '');
+  const [destinationInput, setDestinationInput] = useState(destination?.place_name || '');
   
   const [originSuggestions, setOriginSuggestions] = useState<LocationSuggestion[]>([]);
   const [destinationSuggestions, setDestinationSuggestions] = useState<LocationSuggestion[]>([]);
@@ -38,10 +38,10 @@ export default function RouteSelector({
   const originClickRef = useRef(false);
   const destinationClickRef = useRef(false);
 
-  // Update effect to compare with origin?.name
+  // Update effect to compare with origin?.place_name
   useEffect(() => {
     const delaySearch = setTimeout(async () => {
-      if (originInput && originInput !== origin?.name) {
+      if (originInput && originInput !== origin?.place_name) {
         setIsLoadingOrigin(true);
         try {
           const suggestions = await searchLocations(originInput);
@@ -59,10 +59,10 @@ export default function RouteSelector({
     return () => clearTimeout(delaySearch);
   }, [originInput, origin]);
   
-  // Update effect to compare with destination?.name
+  // Update effect to compare with destination?.place_name
   useEffect(() => {
     const delaySearch = setTimeout(async () => {
-      if (destinationInput && destinationInput !== destination?.name) {
+      if (destinationInput && destinationInput !== destination?.place_name) {
         setIsLoadingDestination(true);
         try {
           const suggestions = await searchLocations(destinationInput);
@@ -80,24 +80,109 @@ export default function RouteSelector({
     return () => clearTimeout(delaySearch);
   }, [destinationInput, destination]);
 
-  // Update handlers to pass LocationSuggestion objects
-  const handleOriginSelect = (suggestion: LocationSuggestion) => {
-    setOriginInput(suggestion.name);
-    setOrigin(suggestion);
-    setOriginSuggestions([]);
-    originClickRef.current = true;
-    if (originRef.current) {
-      originRef.current.blur();
+  // Update to handle string | undefined
+  const handleOriginSelect = async (suggestion: LocationSuggestion | string | undefined) => {
+    if (!suggestion) {
+      // Handle undefined
+      setOriginInput('');
+      return;
+    }
+    
+    if (typeof suggestion === 'string') {
+      // Handle string
+      setOriginInput(suggestion);
+      // You might want to search for this string to get a LocationSuggestion
+      return;
+    }
+    
+    // Handle LocationSuggestion object
+    setOriginInput(suggestion.place_name || suggestion.name);
+    setIsLoadingOrigin(true);
+    
+    try {
+      // Ensure we have coordinates before setting the origin
+      if (suggestion.lat === null || suggestion.lon === null) {
+        if (suggestion.id) {
+          const details = await retrieveLocationDetails(suggestion.id);
+          if (details) {
+            setOrigin({
+              ...suggestion,
+              lat: details.lat,
+              lon: details.lon
+            });
+          } else {
+            throw new Error(`Kunne ikke hente detaljer for ${suggestion.name}`);
+          }
+        } else {
+          throw new Error(`Mangler ID for ${suggestion.name}`);
+        }
+      } else {
+        // Already has coordinates
+        setOrigin(suggestion);
+      }
+    } catch (error) {
+      console.error("Error retrieving location details:", error);
+      setOrigin(suggestion);
+    } finally {
+      setIsLoadingOrigin(false);
+      setOriginSuggestions([]);
+      originClickRef.current = true;
+      if (originRef.current) {
+        originRef.current.blur();
+      }
     }
   };
   
-  const handleDestinationSelect = (suggestion: LocationSuggestion) => {
-    setDestinationInput(suggestion.name);
-    setDestination(suggestion);
-    setDestinationSuggestions([]);
-    destinationClickRef.current = true;
-    if (destinationRef.current) {
-      destinationRef.current.blur();
+  // Update to handle string | undefined
+  const handleDestinationSelect = async (suggestion: LocationSuggestion | string | undefined) => {
+    if (!suggestion) {
+      // Handle undefined
+      setDestinationInput('');
+      return;
+    }
+    
+    if (typeof suggestion === 'string') {
+      // Handle string
+      setDestinationInput(suggestion);
+      // You might want to search for this string to get a LocationSuggestion
+      return;
+    }
+    
+    // Handle LocationSuggestion object
+    setDestinationInput(suggestion.place_name || suggestion.name);
+    setIsLoadingDestination(true);
+    
+    try {
+      // Ensure we have coordinates before setting the destination
+      if (suggestion.lat === null || suggestion.lon === null) {
+        if (suggestion.id) {
+          const details = await retrieveLocationDetails(suggestion.id);
+          if (details) {
+            setDestination({
+              ...suggestion,
+              lat: details.lat,
+              lon: details.lon
+            });
+          } else {
+            throw new Error(`Kunne ikke hente detaljer for ${suggestion.name}`);
+          }
+        } else {
+          throw new Error(`Mangler ID for ${suggestion.name}`);
+        }
+      } else {
+        // Already has coordinates
+        setDestination(suggestion);
+      }
+    } catch (error) {
+      console.error("Error retrieving location details:", error);
+      setDestination(suggestion);
+    } finally {
+      setIsLoadingDestination(false);
+      setDestinationSuggestions([]);
+      destinationClickRef.current = true;
+      if (destinationRef.current) {
+        destinationRef.current.blur();
+      }
     }
   };
 
@@ -115,7 +200,7 @@ export default function RouteSelector({
             onChange={(e) => setOriginInput(e.target.value)}
             placeholder={t('route.fromPlaceholder')}
             onFocus={() => {
-              if (!originClickRef.current && originInput && originInput !== origin?.name) {
+              if (!originClickRef.current && originInput && originInput !== origin?.place_name) {
                 searchLocations(originInput).then(setOriginSuggestions);
               }
             }}
@@ -141,7 +226,7 @@ export default function RouteSelector({
                     handleOriginSelect(suggestion);
                   }}
                 >
-                  {suggestion.name}
+                  {suggestion.place_name}
                 </div>
               ))}
             </div>
@@ -161,7 +246,7 @@ export default function RouteSelector({
             onChange={(e) => setDestinationInput(e.target.value)}
             placeholder={t('route.toPlaceholder')}
             onFocus={() => {
-              if (!destinationClickRef.current && destinationInput && destinationInput !== destination?.name) {
+              if (!destinationClickRef.current && destinationInput && destinationInput !== destination?.place_name) {
                 searchLocations(destinationInput).then(setDestinationSuggestions);
               }
             }}
@@ -187,7 +272,7 @@ export default function RouteSelector({
                     handleDestinationSelect(suggestion);
                   }}
                 >
-                  {suggestion.name}
+                  {suggestion.place_name}
                 </div>
               ))}
             </div>

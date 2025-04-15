@@ -1,29 +1,30 @@
 .toggle {
   display: flex;
-  gap: 4px;
-  margin-left: 16px;
+  gap: 2px;
+  margin-left: 10px;
   background-color: var(--card-bg, rgba(255, 255, 255, 0.1));
-  border-radius: 24px;
-  padding: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  padding: 2px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
   position: relative;
   transition: all 0.2s ease;
+  width: fit-content; /* Make container fit its content */
 }
 
 /* Dark mode styles */
 :global(.dark-mode) .toggle {
   background-color: rgba(30, 30, 30, 0.5);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
 }
 
 .toggleButton {
   background: transparent;
   border: none;
-  border-radius: 20px;
-  padding: 8px 14px;
-  font-size: 14px;
+  border-radius: 14px;
+  padding: 4px 8px;
+  font-size: 12px;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: all 0.2s ease;
   position: relative;
   z-index: 2;
   color: var(--text-color, #444);
@@ -48,21 +49,21 @@
 
 :global(.dark-mode) .toggleButton.active {
   background-color: var(--dark-primary-color, #3694ff);
-  box-shadow: 0 0 12px rgba(54, 148, 255, 0.3);
+  box-shadow: 0 0 6px rgba(54, 148, 255, 0.2);
 }
 
 .toggleButton:focus {
   outline: none;
-  box-shadow: 0 0 0 2px rgba(0, 112, 243, 0.5);
+  box-shadow: 0 0 0 1px rgba(0, 112, 243, 0.4);
 }
 
 /* Flag icons styling */
 .toggleButton::before {
   content: "";
   display: inline-block;
-  margin-right: 6px;
-  width: 16px;
-  height: 16px;
+  margin-right: 4px;
+  width: 12px;
+  height: 12px;
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
@@ -77,31 +78,20 @@
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 480'%3E%3Cpath fill='%23012169' d='M0 0h640v480H0z'/%3E%3Cpath fill='%23FFF' d='M75 0l244 181L562 0h78v62L400 241l240 178v61h-80L320 301 81 480H0v-60l239-178L0 64V0z'/%3E%3Cpath fill='%23C8102E' d='M424 281l216 159v40L369 281zm-184 20l6 35L54 480H0zM640 0v3L391 191l2-44L590 0zM0 0l239 176h-60L0 42z'/%3E%3Cpath fill='%23FFF' d='M241 0v480h160V0zM0 160v160h640V160z'/%3E%3Cpath fill='%23C8102E' d='M0 193v96h640v-96zM273 0v480h96V0z'/%3E%3C/svg%3E");
 }
 
-/* Animation effect */
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
-}
-
-.toggleButton.active {
-  animation: pulse 0.3s ease-in-out;
-}
-
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .toggle {
-    margin-left: 8px;
+    margin-left: 5px;
   }
   
   .toggleButton {
-    padding: 6px 10px;
-    font-size: 12px;
+    padding: 3px 6px;
+    font-size: 11px;
   }
   
   .toggleButton::before {
-    width: 14px;
-    height: 14px;
-    margin-right: 4px;
+    width: 10px;
+    height: 10px;
+    margin-right: 3px;
   }
 }

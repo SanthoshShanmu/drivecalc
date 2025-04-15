@@ -98,7 +98,7 @@ export default function RootLayout({
           data-cmp-host="a.delivery.consentmanager.net" 
           data-cmp-cdn="cdn.consentmanager.net"
           data-cmp-codesrc="16"
-          strategy="beforeInteractive"
+          strategy="afterInteractive"
         />
         
         {/* Structured data for English and Norwegian */}

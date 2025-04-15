@@ -4,9 +4,14 @@ import { LocationSuggestion, RouteData } from '../types/locations';
 const MAPBOX_API_URL = 'https://api.mapbox.com';
 const ACCESS_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
-// Update the searchLocations function to restrict results to Norway
+// Generate a session token for Search Box API
+function getSessionToken() {
+  return crypto.randomUUID ? crypto.randomUUID() : 'no-uuid-support';
+}
 
-// Change the searchLocations function to include country and bbox parameters
+// Save session token to ensure we use the same one for suggest and retrieve operations
+const SESSION_TOKEN = getSessionToken();
+
 export async function searchLocations(query: string, country = 'no') {
   try {
     if (!ACCESS_TOKEN) {
@@ -17,31 +22,58 @@ export async function searchLocations(query: string, country = 'no') {
     console.log(`Searching for: "${query}" with token beginning: ${ACCESS_TOKEN.substring(0, 8)}...`);
     
     const response = await axios.get(
-      `${MAPBOX_API_URL}/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json`,
+      `${MAPBOX_API_URL}/search/searchbox/v1/suggest`,
       {
         params: {
+          q: query,
           access_token: ACCESS_TOKEN,
+          session_token: SESSION_TOKEN,
           limit: 5,
-          country: country,  // ISO code for Norway is 'no'
-          bbox: '4.5,57.5,31.5,71.5'  // Bounding box for Norway
+          country,
+          language: 'no'
+        },
+        headers: {
+          'Content-Type': 'application/json'
         }
       }
     );
     
-    if (response.data && response.data.features) {
-      console.log(`Found ${response.data.features.length} results`);
-      // Convert to LocationSuggestion format
-      return response.data.features.map((feature: any) => ({
-        name: feature.place_name,
-        lat: feature.geometry.coordinates[1],
-        lon: feature.geometry.coordinates[0],
-        place_name: feature.place_name,
-        place_type: feature.place_type,
-        id: feature.id
-      }));
+    if (response.data && response.data.suggestions) {
+      console.log(`Found ${response.data.suggestions.length} results`);
+      
+      // Convert to LocationSuggestion format with enhanced display names
+      return response.data.suggestions.map((suggestion: any) => {
+        // Get the name, address parts, and type
+        const name = suggestion.name;
+        const featureType = suggestion.feature_type || 'place';
+        const fullAddress = suggestion.full_address || suggestion.place_formatted || '';
+        
+        // Format display name based on feature type
+        let placeName;
+        if (featureType === 'poi' && fullAddress) {
+          // For POIs, use format "POI Name - Address" to highlight the POI
+          const addressPart = fullAddress.replace(name, '').replace(/^,\s*/, ''); 
+          placeName = `${name} - ${addressPart}`;
+        } else if (featureType === 'address') {
+          // For addresses, use the full address
+          placeName = fullAddress || name;
+        } else {
+          // For other types, use the full address if available, otherwise just the name
+          placeName = fullAddress || name;
+        }
+        
+        return {
+          name: name,
+          lat: suggestion.coordinates ? suggestion.coordinates.latitude : null,
+          lon: suggestion.coordinates ? suggestion.coordinates.longitude : null,
+          place_name: placeName,
+          place_type: [featureType],
+          id: suggestion.mapbox_id
+        };
+      });
     }
     
-    console.warn('No features found in response');
+    console.warn('No suggestions found in response');
     return [];
   } catch (error) {
     console.error('Error in searchLocations:', error);
@@ -55,6 +87,94 @@ export async function searchLocations(query: string, country = 'no') {
   }
 }
 
+// Retrieve full details for a location using its mapbox_id
+export async function retrieveLocationDetails(mapboxId: string): Promise<LocationSuggestion | null> {
+  try {
+    if (!ACCESS_TOKEN) {
+      console.error('No Mapbox token available in environment variables.');
+      return null;
+    }
+    
+    console.log(`Retrieving details for location ID: ${mapboxId}`);
+    
+    const response = await axios.get(
+      `${MAPBOX_API_URL}/search/searchbox/v1/retrieve/${mapboxId}`,
+      {
+        params: {
+          access_token: ACCESS_TOKEN,
+          session_token: SESSION_TOKEN
+        }
+      }
+    );
+    
+    if (response.data && response.data.features && response.data.features.length > 0) {
+      const feature = response.data.features[0];
+      const properties = feature.properties;
+      
+      // Extract coordinates from the feature
+      const [lon, lat] = feature.geometry.coordinates;
+      
+      // Format display name based on feature type
+      const name = properties.name;
+      const featureType = properties.feature_type || 'place';
+      const fullAddress = properties.full_address || properties.place_formatted || '';
+      
+      let placeName;
+      if (featureType === 'poi' && fullAddress) {
+        // For POIs, use format "POI Name - Address" to highlight the POI
+        const addressPart = fullAddress.replace(name, '').replace(/^,\s*/, '');
+        placeName = `${name} - ${addressPart}`;
+      } else {
+        // For other types, use the full address if available, otherwise just the name
+        placeName = fullAddress || name;
+      }
+      
+      return {
+        name: name,
+        lat: lat,
+        lon: lon,
+        place_name: placeName,
+        place_type: [featureType],
+        id: properties.mapbox_id
+      };
+    }
+    
+    console.warn('No location details found in response');
+    return null;
+  } catch (error) {
+    console.error('Error retrieving location details:', error);
+    
+    if (axios.isAxiosError(error) && error.response) {
+      console.error('Response status:', error.response.status);
+      console.error('Response data:', error.response.data);
+    }
+    
+    return null;
+  }
+}
+
+// Get coordinates for a LocationSuggestion, retrieving details if needed
+export async function ensureCoordinates(location: LocationSuggestion): Promise<[number, number]> {
+  // If we already have coordinates, use them
+  if (location.lat !== null && location.lon !== null) {
+    return [location.lon, location.lat];
+  }
+  
+  // Otherwise, retrieve full details using mapbox_id
+  if (location.id) {
+    console.log(`Location ${location.name} is missing coordinates, retrieving details...`);
+    const details = await retrieveLocationDetails(location.id);
+    if (details && details.lat !== null && details.lon !== null) {
+      // Update the original location object with coordinates
+      location.lat = details.lat;
+      location.lon = details.lon;
+      return [details.lon, details.lat];
+    }
+  }
+  
+  throw new Error(`Kunne ikke hente koordinater for: ${location.name}`);
+}
+
 // Get coordinates for a place name
 export async function getCoordinates(placeName: string): Promise<[number, number]> {
   try {
@@ -63,7 +183,8 @@ export async function getCoordinates(placeName: string): Promise<[number, number
       throw new Error(`Kunne ikke finne koordinater for: ${placeName}`);
     }
     
-    return [results[0].lon, results[0].lat];
+    // Ensure we have coordinates for the first result
+    return await ensureCoordinates(results[0]);
   } catch (error) {
     console.error('Error getting coordinates:', error);
     throw error;
@@ -90,24 +211,25 @@ export async function fetchRouteFromMapbox(
     if (typeof origin === 'string') {
       originCoords = await getCoordinates(origin);
     } else {
-      originCoords = [origin.lon, origin.lat];
+      // Ensure we have coordinates for the origin object
+      originCoords = await ensureCoordinates(origin);
     }
     
     if (typeof destination === 'string') {
       destCoords = await getCoordinates(destination);
     } else {
-      destCoords = [destination.lon, destination.lat];
+      // Ensure we have coordinates for the destination object
+      destCoords = await ensureCoordinates(destination);
     }
     
     // Construct coordinates string (format: lon,lat)
     let coordinatesString = `${originCoords[0]},${originCoords[1]}`;
     
-    // Add stops as via points
-    stops.forEach(stop => {
-      if (stop.lat && stop.lon) {
-        coordinatesString += `;${stop.lon},${stop.lat}`;
-      }
-    });
+    // Add stops as via points, ensuring we have coordinates
+    for (const stop of stops) {
+      const stopCoords = await ensureCoordinates(stop);
+      coordinatesString += `;${stopCoords[0]},${stopCoords[1]}`;
+    }
     
     // Add destination
     coordinatesString += `;${destCoords[0]},${destCoords[1]}`;
