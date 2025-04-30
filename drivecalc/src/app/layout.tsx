@@ -49,6 +49,9 @@ export const metadata: Metadata = {
   },
 };
 
+// Make sure to use proper SSR techniques
+export const dynamic = 'force-static'; // or 'force-dynamic' if content needs to be fresh
+
 export default function RootLayout({
   children,
 }: {
@@ -161,6 +164,14 @@ export default function RootLayout({
               }
             `,
           }}
+        />
+
+        <Script
+          id="adsense-init"
+          async
+          strategy="lazyOnload"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7726641596892047"
+          crossOrigin="anonymous"
         />
       </head>
       <body className={inter.className}>

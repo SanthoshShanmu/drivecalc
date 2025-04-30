@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styles from './AdBanner.module.css';
 
 interface AdBannerProps {
@@ -12,50 +12,31 @@ interface AdBannerProps {
 
 export default function AdBanner({ adClient, adSlot, adFormat = 'auto', className = '' }: AdBannerProps) {
   const adRef = useRef<HTMLDivElement>(null);
-  const isLoaded = useRef(false);
-
+  
+  // During verification, just show a placeholder
+  // You can update this code after approval
   useEffect(() => {
-    // Skip if already loaded or no ref
-    if (!adRef.current || isLoaded.current) return;
+    if (!adRef.current) return;
     
-    // Mark as loaded to prevent duplicate initialization
-    isLoaded.current = true;
-    
-    // Store current ref value for cleanup
-    const currentRef = adRef.current;
-    
-    // Create the ad element
-    const adElement = document.createElement('ins');
-    adElement.className = 'adsbygoogle';
-    adElement.style.display = 'block';
-    adElement.dataset.adClient = adClient;
-    adElement.dataset.adSlot = adSlot;
-    adElement.dataset.adFormat = adFormat;
+    // Just add a placeholder during verification
+    const placeholder = document.createElement('div');
+    placeholder.textContent = "Ad placeholder - awaiting approval";
+    placeholder.style.border = "1px dashed #ccc";
+    placeholder.style.padding = "20px";
+    placeholder.style.textAlign = "center";
+    placeholder.style.color = "#666";
     
     // Clear any existing content
-    if (currentRef.firstChild) {
-      currentRef.innerHTML = '';
+    if (adRef.current.firstChild) {
+      adRef.current.innerHTML = '';
     }
     
-    // Add the element to DOM
-    currentRef.appendChild(adElement);
-    
-    // Push the ad command
-    try {
-      const adsbygoogle = (window as any).adsbygoogle || [];
-      adsbygoogle.push({});
-    } catch (error) {
-      console.error('Ad loading error:', error);
-    }
-    
-    // Cleanup function
-    return () => {
-      isLoaded.current = false;
-      if (currentRef) {
-        currentRef.innerHTML = '';
-      }
-    };
-  }, [adClient, adSlot, adFormat]);
+    adRef.current.appendChild(placeholder);
+  }, []);
 
-  return <div ref={adRef} className={`${styles.adContainer} ${className}`} />;
+  return (
+    <div ref={adRef} className={`${styles.adContainer} ${className}`}>
+      <div className={styles.adLabel}>Advertisement</div>
+    </div>
+  );
 }

@@ -35,6 +35,18 @@ export default function Home() {
     setIsClient(true);
   }, []);
 
+  // Add this state and effect
+  const [contentReady, setContentReady] = useState(false);
+
+  useEffect(() => {
+    // Set a timer to ensure content is rendered before ads
+    const timer = setTimeout(() => {
+      setContentReady(true);
+    }, 1500);
+    
+    return () => clearTimeout(timer);
+  }, []);
+
   // Rest of your state variables remain the same
   const [origin, setOrigin] = useState<LocationSuggestion | null>(null);
   const [destination, setDestination] = useState<LocationSuggestion | null>(null);
@@ -266,6 +278,14 @@ export default function Home() {
           </div>
         </div>
         
+        <section className={styles.contentSection}>
+          <h2>{t('main.howItWorks.title')}</h2>
+          <p className={styles.contentText}>{t('main.howItWorks.description')}</p>
+          
+          <h3>{t('main.routeExample.title')}</h3>
+          <p className={styles.contentText}>{t('main.routeExample.description')}</p>
+        </section>
+        
         {isClient && !results && (
           <AdBanner
             adClient="ca-pub-7726641596892047"
@@ -296,6 +316,15 @@ export default function Home() {
             adSlot="0987654321"
             adFormat="rectangle"
             className={styles.resultsAd}
+          />
+        )}
+        
+        {contentReady && (
+          <AdBanner 
+            adClient="ca-pub-7726641596892047"
+            adSlot="1234567890" // ← Replace this with your ACTUAL ad slot ID from AdSense
+            adFormat="rectangle"
+            className={styles.mainAd}
           />
         )}
         

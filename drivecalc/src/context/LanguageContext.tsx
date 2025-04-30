@@ -316,6 +316,22 @@ export const translations: Record<string, Record<string, string>> = {
     no: 'DriveCalc er utviklet for å gi deg de mest nøyaktige beregningene for alle typer reiser i Norge, enten du kjører elbil, hybrid, bensin eller diesel.',
     en: 'DriveCalc is developed to provide you with the most accurate calculations for all types of trips in Norway, whether you drive an electric car, hybrid, petrol or diesel.'
   },
+  'main.howItWorks.title': {
+    no: 'Slik fungerer DriveCalc',
+    en: 'How DriveCalc Works'
+  },
+  'main.howItWorks.description': {
+    no: 'DriveCalc bruker avanserte algoritmer for å beregne nøyaktige kjørekostnader basert på distanse, drivstoffpriser, bomavgifter og kjøretøytype. Vår kalkulator oppdateres kontinuerlig med de nyeste prisene fra bensinstasjoner og bomselskaper over hele Norge.',
+    en: 'DriveCalc uses advanced algorithms to calculate accurate driving costs based on distance, fuel prices, toll fees, and vehicle type. Our calculator is continuously updated with the latest prices from gas stations and toll companies across Norway.'
+  },
+  'main.routeExample.title': {
+    no: 'Detaljerte ruteberegninger',
+    en: 'Detailed Route Calculations'
+  },
+  'main.routeExample.description': {
+    no: 'For hver rute gir vi en fullstendig oversikt over distanse, kjøretid, drivstofforbruk, bomstasjoner langs veien og totale kostnader. Du kan enkelt justere innstillinger som kjøretøytype, passasjerantall og om du planlegger en rundtur.',
+    en: 'For each route, we provide a complete overview of distance, driving time, fuel consumption, toll stations along the way, and total costs. You can easily adjust settings such as vehicle type, number of passengers, and whether you\'re planning a round trip.'
+  },
 
   // Tips page
   'tips.title': {
