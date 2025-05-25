@@ -19,6 +19,10 @@ export default function Footer() {
           <Link href={language === 'en' ? "/en/faq" : "/faq"}>
             {t('footer.faq')}
           </Link>
+          <Link href={language === 'en' ? "/en/toll-system" : "/toll-system"}>
+            {language === 'en' ? 'Toll System' : 'Bomsystem'}</Link>
+          <Link href={language === 'en' ? "/en/ad-policy" : "/ad-policy"}>
+            {language === 'en' ? 'Ad Policy' : 'Annonsepolicy'}</Link>
         </div>
         <div className="copyright">
           &copy; {new Date().getFullYear()} DriveCalc. {t('footer.copyright')}

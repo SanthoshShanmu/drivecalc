@@ -309,24 +309,41 @@ export default function Home() {
           }}
           stops={stops}
         />}
-        
-        {isClient && results && (
-          <AdBanner
+
+        {/* First show calculator and main content sections */}
+        <div className={styles.calculator}>
+          {/* Calculator code */}
+        </div>
+
+        {/* Add this BEFORE any ad units */}
+        <div className={styles.infoSection}>
+          <h2 className={styles.infoTitle}>{t('main.about.title')}</h2>
+          <div className={styles.infoContent}>
+            <p>{t('main.about.paragraph1')}</p>
+            <p>{t('main.about.paragraph2')}</p>
+            <p>{t('main.about.paragraph3')}</p>
+            {/* More content here */}
+          </div>
+        </div>
+
+        {/* THEN show ad placement */}
+        {isClient && (
+          <AdBanner 
             adClient="ca-pub-7726641596892047"
-            adSlot="0987654321"
             adFormat="rectangle"
             className={styles.resultsAd}
           />
         )}
-        
-        {contentReady && (
+
+        {/* Comment out additional ad units during verification process */}
+        {/* contentReady && (
           <AdBanner 
             adClient="ca-pub-7726641596892047"
-            adSlot="1234567890" // ← Replace this with your ACTUAL ad slot ID from AdSense
+            adSlot="..."
             adFormat="rectangle"
             className={styles.mainAd}
           />
-        )}
+        ) */}
         
         {/* SEO-friendly content - updated with translations */}
         <section className={styles.infoSection}>
@@ -386,6 +403,83 @@ export default function Home() {
             {t('main.about.paragraph2')}
           </p>
         </section>
+
+        {/* Add this section after your calculator functionality */}
+        <div className={styles.infoSection}>
+          <h2 className={styles.infoTitle}>{t('main.about.title')}</h2>
+          
+          <div className={styles.infoContent}>
+            <p>{t('main.about.paragraph1')}</p>
+            <p>{t('main.about.paragraph2')}</p>
+            <p>{t('main.about.paragraph3')}</p>
+            
+            <div className={styles.infoColumns}>
+              <div className={styles.infoColumn}>
+                <h3>{t('main.tolls.title')}</h3>
+                <p>{t('main.tolls.text')}</p>
+                
+                <h4>{t('main.popularTollRoutes.title')}</h4>
+                <ul className={styles.infoList}>
+                  <li>{t('main.popularTollRoutes.osloTrondheim')}</li>
+                  <li>{t('main.popularTollRoutes.osloBergen')}</li>
+                  <li>{t('main.popularTollRoutes.kristiansandStavanger')}</li>
+                </ul>
+              </div>
+              
+              <div className={styles.infoColumn}>
+                <h3>{t('main.fuelCosts.title')}</h3>
+                <p>{t('main.fuelCosts.text')}</p>
+                
+                <div className={styles.fuelPriceTable}>
+                  <div className={styles.fuelPriceHeader}>
+                    <span>{t('main.fuelTable.type')}</span>
+                    <span>{t('main.fuelTable.averagePrice')}</span>
+                  </div>
+                  <div className={styles.fuelPriceRow}>
+                    <span>{t('main.fuelTable.petrol')}</span>
+                    <span>22,50 kr/l</span>
+                  </div>
+                  <div className={styles.fuelPriceRow}>
+                    <span>{t('main.fuelTable.diesel')}</span>
+                    <span>21,30 kr/l</span>
+                  </div>
+                  <div className={styles.fuelPriceRow}>
+                    <span>{t('main.fuelTable.electricity')}</span>
+                    <span>1,80 kr/kWh</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.roadGuidesSection}>
+          <h2 className={styles.roadGuidesTitle}>{t('main.roadGuides.title')}</h2>
+          
+          <div className={styles.roadGuideCards}>
+            <div className={styles.roadGuideCard}>
+              <h3>{t('main.roadGuides.scenic.title')}</h3>
+              <p>{t('main.roadGuides.scenic.description')}</p>
+              <ul>
+                <li>Atlanterhavsvegen (Atlantic Ocean Road)</li>
+                <li>Trollstigen (The Troll&#39;s Path)</li>
+                <li>Geiranger - Trollstigen National Tourist Route</li>
+                <li>Hardangervidda National Tourist Route</li>
+              </ul>
+            </div>
+            
+            <div className={styles.roadGuideCard}>
+              <h3>{t('main.roadGuides.winter.title')}</h3>
+              <p>{t('main.roadGuides.winter.description')}</p>
+              <ul>
+                <li>{t('main.roadGuides.winter.tires')}</li>
+                <li>{t('main.roadGuides.winter.chains')}</li>
+                <li>{t('main.roadGuides.winter.closures')}</li>
+                <li>{t('main.roadGuides.winter.emergency')}</li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
   );

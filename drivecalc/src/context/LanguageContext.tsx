@@ -316,6 +316,10 @@ export const translations: Record<string, Record<string, string>> = {
     no: 'DriveCalc er utviklet for å gi deg de mest nøyaktige beregningene for alle typer reiser i Norge, enten du kjører elbil, hybrid, bensin eller diesel.',
     en: 'DriveCalc is developed to provide you with the most accurate calculations for all types of trips in Norway, whether you drive an electric car, hybrid, petrol or diesel.'
   },
+  'main.about.paragraph3': {
+    no: 'Vår DriveCalc-kalkulator lar deg raskt beregne alle kostnader for din reise, med alternativer for kjøretøytype, drivstofftype, antall passasjerer, og om du planlegger en enveis- eller rundtur.',
+    en: 'Our DriveCalc calculator allows you to quickly calculate all costs for your journey, with options for vehicle type, fuel type, number of passengers, and whether you plan a one-way or round trip.'
+  },
   'main.howItWorks.title': {
     no: 'Slik fungerer DriveCalc',
     en: 'How DriveCalc Works'
@@ -331,6 +335,78 @@ export const translations: Record<string, Record<string, string>> = {
   'main.routeExample.description': {
     no: 'For hver rute gir vi en fullstendig oversikt over distanse, kjøretid, drivstofforbruk, bomstasjoner langs veien og totale kostnader. Du kan enkelt justere innstillinger som kjøretøytype, passasjerantall og om du planlegger en rundtur.',
     en: 'For each route, we provide a complete overview of distance, driving time, fuel consumption, toll stations along the way, and total costs. You can easily adjust settings such as vehicle type, number of passengers, and whether you\'re planning a round trip.'
+  },
+  'main.popularTollRoutes.title': {
+    no: 'Populære ruter med bompenger',
+    en: 'Popular routes with toll fees'
+  },
+  'main.popularTollRoutes.osloTrondheim': {
+    no: 'Oslo - Trondheim: 7-10 bomstasjoner, ca. 500-700 kr totalt',
+    en: 'Oslo - Trondheim: 7-10 toll stations, approx. 500-700 NOK total'
+  },
+  'main.popularTollRoutes.osloBergen': {
+    no: 'Oslo - Bergen: 8-12 bomstasjoner, ca. 600-800 kr totalt',
+    en: 'Oslo - Bergen: 8-12 toll stations, approx. 600-800 NOK total'
+  },
+  'main.popularTollRoutes.kristiansandStavanger': {
+    no: 'Kristiansand - Stavanger: 5-7 bomstasjoner, ca. 350-450 kr totalt',
+    en: 'Kristiansand - Stavanger: 5-7 toll stations, approx. 350-450 NOK total'
+  },
+  'main.fuelTable.type': {
+    no: 'Drivstofftype',
+    en: 'Fuel Type'
+  },
+  'main.fuelTable.averagePrice': {
+    no: 'Gjennomsnittspris',
+    en: 'Average Price'
+  },
+  'main.fuelTable.petrol': {
+    no: 'Bensin (95)',
+    en: 'Petrol (95)'
+  },
+  'main.fuelTable.diesel': {
+    no: 'Diesel',
+    en: 'Diesel'
+  },
+  'main.fuelTable.electricity': {
+    no: 'Elektrisitet',
+    en: 'Electricity'
+  },
+  'main.roadGuides.title': {
+    no: 'Veiguider for Norge',
+    en: 'Road Guides for Norway'
+  },
+  'main.roadGuides.scenic.title': {
+    no: 'Nasjonale turistveier',
+    en: 'Scenic Routes'
+  },
+  'main.roadGuides.scenic.description': {
+    no: 'Norge har 18 nasjonale turistveier med spektakulær natur og arkitektur:',
+    en: 'Norway has 18 national tourist routes with spectacular nature and architecture:'
+  },
+  'main.roadGuides.winter.title': {
+    no: 'Vinterkjøring i Norge',
+    en: 'Winter Driving in Norway'
+  },
+  'main.roadGuides.winter.description': {
+    no: 'Vinterkjøring i Norge krever spesielle forberedelser:',
+    en: 'Winter driving in Norway requires special preparations:'
+  },
+  'main.roadGuides.winter.tires': {
+    no: 'Vinterdekk er påbudt fra november til april',
+    en: 'Winter tires are mandatory from November to April'
+  },
+  'main.roadGuides.winter.chains': {
+    no: 'Ha kjettinger tilgjengelig i fjellområder',
+    en: 'Have chains available in mountain areas'
+  },
+  'main.roadGuides.winter.closures': {
+    no: 'Sjekk veistatusen - mange fjelloverganger stenges',
+    en: 'Check road status - many mountain passes close'
+  },
+  'main.roadGuides.winter.emergency': {
+    no: 'Ha med ekstra klær, mat og varme tepper',
+    en: 'Bring extra clothes, food and warm blankets'
   },
 
   // Tips page

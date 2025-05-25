@@ -88,6 +88,42 @@ export default function FAQPage() {
             </p>
           </div>
 
+          <div className={styles.faqSection}>
+            <h2 className={styles.faqSectionTitle}>Understanding Norwegian Road Infrastructure</h2>
+            
+            <div className={styles.faqItem}>
+              <h3>How is the Norwegian road system organized?</h3>
+              <p>
+                Norway&#39;s road network spans approximately 94,000 kilometers and is categorized into several types:
+              </p>
+              <ul>
+                <li><strong>National roads (Riksvei)</strong> - Main thoroughfares connecting major cities</li>
+                <li><strong>County roads (Fylkesvei)</strong> - Roads maintained by county authorities</li>
+                <li><strong>Municipal roads (Kommunal vei)</strong> - Local roads within municipalities</li>
+                <li><strong>Private roads (Privat vei)</strong> - Roads maintained by private individuals or organizations</li>
+              </ul>
+              <p>
+                The Norwegian Public Roads Administration (Statens vegvesen) is responsible for the planning, construction, and maintenance of national and county roads, while municipalities handle local infrastructure.
+              </p>
+            </div>
+            
+            <div className={styles.faqItem}>
+              <h3>What are the major road projects currently underway in Norway?</h3>
+              <p>
+                Norway is continuously improving its road infrastructure with several major projects:
+              </p>
+              <ul>
+                <li>The E39 Coastal Highway Route - A 1,100 km project to create a ferry-free connection between Kristiansand and Trondheim</li>
+                <li>E18 Vestkorridoren - Major expansion of the western corridor into Oslo</li>
+                <li>Rogfast underwater tunnel - Will be the world&#39;s longest and deepest subsea road tunnel</li>
+                <li>E6 expansion projects - Continuous improvements to Norway&#39;s main north-south highway</li>
+              </ul>
+              <p>
+                These projects aim to reduce travel times, improve safety, and create more environmentally sustainable transportation options.
+              </p>
+            </div>
+          </div>
+
           <div className={styles.backLink}>
             <Link href="/">← Tilbake til kalkulatoren</Link>
           </div>

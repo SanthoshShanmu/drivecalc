@@ -5,7 +5,7 @@ import styles from './AdBanner.module.css';
 
 interface AdBannerProps {
   adClient: string;
-  adSlot: string;
+  adSlot?: string; // Made optional for verification phase
   adFormat?: string;
   className?: string;
 }
@@ -13,18 +13,20 @@ interface AdBannerProps {
 export default function AdBanner({ adClient, adSlot, adFormat = 'auto', className = '' }: AdBannerProps) {
   const adRef = useRef<HTMLDivElement>(null);
   
-  // During verification, just show a placeholder
-  // You can update this code after approval
   useEffect(() => {
     if (!adRef.current) return;
     
-    // Just add a placeholder during verification
+    // Just add a placeholder during verification - don't attempt to load real ads
     const placeholder = document.createElement('div');
-    placeholder.textContent = "Ad placeholder - awaiting approval";
+    placeholder.textContent = "Advertisement - Our site uses ads to support our service";
     placeholder.style.border = "1px dashed #ccc";
     placeholder.style.padding = "20px";
     placeholder.style.textAlign = "center";
     placeholder.style.color = "#666";
+    placeholder.style.minHeight = "120px";
+    placeholder.style.display = "flex";
+    placeholder.style.alignItems = "center";
+    placeholder.style.justifyContent = "center";
     
     // Clear any existing content
     if (adRef.current.firstChild) {
@@ -32,6 +34,9 @@ export default function AdBanner({ adClient, adSlot, adFormat = 'auto', classNam
     }
     
     adRef.current.appendChild(placeholder);
+    
+    // DO NOT attempt to initialize adsbygoogle during verification
+    // We'll add this functionality after approval
   }, []);
 
   return (
