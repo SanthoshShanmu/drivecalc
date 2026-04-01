@@ -16,10 +16,6 @@
   --input-border: #ddd;
   --input-focus: rgba(0, 112, 243, 0.2);
   --shadow-color: rgba(0, 0, 0, 0.1);
-  --toll-marker: #ffc107;
-  --origin-marker: #33A532;
-  --destination-marker: #E63946;
-  --stop-marker: #9C27B0; /* New purple color for stops */
 }
 
 /* Dark mode based on class OR media query */
@@ -38,10 +34,6 @@
   --input-border: #444444;
   --input-focus: rgba(50, 145, 255, 0.2);
   --shadow-color: rgba(0, 0, 0, 0.3);
-  --toll-marker: #ffc107;
-  --origin-marker: #33A532;
-  --destination-marker: #E63946;
-  --stop-marker: #9C27B0; /* Same color in dark mode */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -60,10 +52,6 @@
     --input-border: #444444;
     --input-focus: rgba(50, 145, 255, 0.2);
     --shadow-color: rgba(0, 0, 0, 0.3);
-    --toll-marker: #ffc107;
-    --origin-marker: #33A532;
-    --destination-marker: #E63946;
-    --stop-marker: #9C27B0; /* Same color in dark mode */
   }
 }
 

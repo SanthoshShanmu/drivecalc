@@ -96,6 +96,14 @@ export const translations: Record<string, Record<string, string>> = {
     no: 'Skriv inn destinasjon',
     en: 'Enter destination'
   },
+  'route.distance': {
+    no: 'Distanse (km)',
+    en: 'Distance (km)'
+  },
+  'route.distancePlaceholder': {
+    no: 'F.eks. 350',
+    en: 'E.g. 350'
+  },
   
   // Stop List
   'stops.title': {
@@ -339,6 +347,14 @@ export const translations: Record<string, Record<string, string>> = {
   'main.popularTollRoutes.title': {
     no: 'Populære ruter med bompenger',
     en: 'Popular routes with toll fees'
+  },
+  'main.tolls.title': {
+    no: 'Bompenger i Norge',
+    en: 'Toll fees in Norway'
+  },
+  'main.tolls.text': {
+    no: 'Norge har et omfattende bompengesystem. Kostnader varierer avhengig av rute, kjøretøy og tidspunkt.',
+    en: 'Norway has an extensive toll system. Costs vary depending on route, vehicle type and time of day.'
   },
   'main.popularTollRoutes.osloTrondheim': {
     no: 'Oslo - Trondheim: 7-10 bomstasjoner, ca. 500-700 kr totalt',

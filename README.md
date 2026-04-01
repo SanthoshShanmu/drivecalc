@@ -1,14 +1,12 @@
 # DriveCalc - Norwegian Driving Cost Calculator
 
-DriveCalc is a web application that helps you calculate driving costs in Norway. It provides accurate estimates for fuel consumption, toll expenses, and total travel costs between locations.
+DriveCalc is a web application that helps you calculate driving costs in Norway. It provides accurate estimates for fuel consumption and total travel costs between locations.
 
 ## Features
 
-- Calculate route distance and duration between any two locations in Norway
+- Calculate driving costs by entering origin, destination and distance
 - Add multiple stops along your route for complex journeys
-- Display interactive maps with route visualization, including stops and toll stations
 - Calculate fuel costs based on vehicle type and fuel consumption
-- Include toll costs in total travel expenses
 - Support for different vehicle types (car, truck) and fuel options (petrol, diesel, electric, hybrid)
 - Round-trip calculation option
 - Split costs among multiple passengers
@@ -22,7 +20,6 @@ DriveCalc is a web application that helps you calculate driving costs in Norway.
 
 - [Next.js 15](https://nextjs.org/) - React framework
 - [React 19](https://react.dev/) - UI library
-- [Mapbox GL](https://www.mapbox.com/) - Interactive maps
 - [Axios](https://axios-http.com/) - HTTP client for API requests
 - [TailwindCSS 4](https://tailwindcss.com/) - CSS framework
 - [TypeScript](https://www.typescriptlang.org/) - Type safety
@@ -33,8 +30,7 @@ DriveCalc is a web application that helps you calculate driving costs in Norway.
 ### Prerequisites
 
 - Node.js (v18 or newer)
-- A Mapbox API key
-- A Bompengekalkulator API key
+- A Bompengekalkulator API key (optional, for toll fee lookup)
 
 ### Installation
 
@@ -49,9 +45,8 @@ cd drivecalc
 npm install
 ```
 
-3. Create a `.env.local` file in the root directory with your Mapbox API key and BompengeAPI key:
+3. Optionally create a `.env.local` file in the root directory with your BompengeAPI key:
 ```
-NEXT_PUBLIC_MAPBOX_API_KEY=your_mapbox_api_key
 NEXT_PUBLIC_BOMPENGE_API_KEY=your_bompenge_api_key
 ```
 
@@ -64,14 +59,13 @@ npm run dev
 
 ## Usage
 
-1. Enter your origin and destination locations
-2. Select your vehicle type and fuel type
-3. View the calculated route on the map
+1. Enter your origin and destination location names
+2. Enter the distance of your route in kilometers
+3. Select your vehicle type and fuel type
 4. See the detailed breakdown of costs including:
    - Fuel consumption and cost
-   - Toll expenses
    - Total travel cost
-   - Journey distance and time
+   - Journey time estimate
 
 ## Building for Production
 
@@ -107,7 +101,6 @@ drivecalc/
 │   │   ├── LanguageSwitcher.tsx # Language context initializer
 │   │   ├── LanguageToggle.tsx # Language toggle UI component
 │   │   ├── LanguageToggleClient.tsx # Client-side language toggle
-│   │   ├── Map.tsx            # Mapbox implementation with route display
 │   │   ├── RouteSelector.tsx  # Origin/destination selector
 │   │   ├── StopList.tsx       # Intermediate stops manager
 │   │   ├── ThemeToggle.tsx    # Dark/light mode toggle
@@ -117,7 +110,6 @@ drivecalc/
 │   ├── lib/                   # Utility functions
 │   │   ├── analytics.ts       # Google Analytics integration
 │   │   ├── fuel.ts            # Fuel calculation utilities
-│   │   ├── mapbox.ts          # Mapbox integration
 │   │   └── tolls.ts           # Toll calculation utilities
 │   └── types/                 # TypeScript type definitions
 │       └── locations.ts       # Types for locations and routes

@@ -1,76 +1,54 @@
 "use client";
 
-// Import the useLanguage hook at the top
 import { useLanguage } from '@/context/LanguageContext';
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 
-// Rest of the imports remain the same
 const AdBanner = dynamic(() => import('@/components/AdBanner'), { 
   ssr: false,
   loading: () => <div className="ad-placeholder"></div>
 });
 
-// Keep the other imports
-import { fetchRouteFromMapbox } from '@/lib/mapbox';
 import RouteSelector from '@/components/RouteSelector';
 import VehicleSelector from '@/components/VehicleSelector';
 import CostResults from '@/components/CostResults';
-import Map from '@/components/Map';
 import styles from './page.module.css';
-import { calculateTollFees } from '@/lib/tolls';
 import { calculateFuelConsumption, getFuelPrice, FuelType, VehicleType } from '@/lib/fuel';
 import { useAnalytics } from '@/lib/analytics';
 import StopList from '@/components/StopList';
 import { LocationSuggestion } from '@/types/locations';
 
 export default function Home() {
-  // Get translation function
   const { t } = useLanguage();
 
-  // Add state to track client-side rendering
   const [isClient, setIsClient] = useState(false);
   
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  // Add this state and effect
-  const [contentReady, setContentReady] = useState(false);
-
-  useEffect(() => {
-    // Set a timer to ensure content is rendered before ads
-    const timer = setTimeout(() => {
-      setContentReady(true);
-    }, 1500);
-    
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Rest of your state variables remain the same
   const [origin, setOrigin] = useState<LocationSuggestion | null>(null);
   const [destination, setDestination] = useState<LocationSuggestion | null>(null);
-  // Rest of your code unchanged
   const [stops, setStops] = useState<LocationSuggestion[]>([]);
   const [vehicle, setVehicle] = useState<VehicleType>('car');
   const [fuelType, setFuelType] = useState<FuelType>('bensin');
   const [isRoundTrip, setIsRoundTrip] = useState(false);
   const [passengerCount, setPassengerCount] = useState(1);
+  const [distanceKm, setDistanceKm] = useState<number | ''>('');
   const [formChanged, setFormChanged] = useState(false);
   
-  // Keep all the handlers unchanged
   function handleRoundTripChange(value: boolean) {
     setIsRoundTrip(value);
     setFormChanged(true);
   }
 
-  function handleVehicleChange(vehicle: string) {
-    setVehicle(vehicle as VehicleType);
+  function handleVehicleChange(v: string) {
+    setVehicle(v as VehicleType);
     setFormChanged(true);
   }
 
-  function handleFuelTypeChange(fuelType: string) {
-    setFuelType(fuelType as FuelType);
+  function handleFuelTypeChange(ft: string) {
+    setFuelType(ft as FuelType);
     setFormChanged(true);
   }
 
@@ -93,18 +71,21 @@ export default function Home() {
     setStops(stopsOrUpdater);
     setFormChanged(true);
   }
+
+  function handleDistanceChange(value: string) {
+    const parsed = parseFloat(value);
+    setDistanceKm(isNaN(parsed) || parsed < 0 ? '' : parsed);
+    setFormChanged(true);
+  }
   
-  // Keep the other state variables
   const [routeData, setRouteData] = useState<{
-    distance: any;
-    duration: any;
-    geometry: any;
-    waypoints: { location: any; name: string; }[];
+    distance: number;
+    duration: number;
   } | null>(null);
   
   const [results, setResults] = useState<{
-    distance: any;
-    duration: any;
+    distance: number;
+    duration: number;
     fuelCost: number;
     tollCost: number;
     totalCost: number;
@@ -122,17 +103,20 @@ export default function Home() {
   
   const { trackEvent } = useAnalytics();
   
-  // Update the calculateCosts function to ensure round trip is calculated correctly
   const calculateCosts = async () => {
     if (!origin || !destination) {
       alert('Vennligst velg start- og sluttdestinasjon');
+      return;
+    }
+
+    if (distanceKm === '' || distanceKm <= 0) {
+      alert('Vennligst skriv inn distansen i kilometer');
       return;
     }
     
     setIsCalculating(true);
     
     try {
-      // Track event when calculation starts
       trackEvent('calculate_route', {
         origin,
         destination,
@@ -142,83 +126,57 @@ export default function Home() {
         round_trip: isRoundTrip
       });
       
-      // Pass stops to the route calculation function
-      const routeDetails = await fetchRouteFromMapbox(origin, destination, stops);
-      setRouteData(routeDetails);
+      // Convert km to meters; estimate duration at average 80 km/h
+      const distanceMeters = distanceKm * 1000;
+      const durationSeconds = (distanceKm / 80) * 3600;
+
+      setRouteData({ distance: distanceMeters, duration: durationSeconds });
       
-      // Calculate tolls with isRoundTrip flag
-      const tolls = await calculateTollFees(
-        routeDetails.waypoints,
-        vehicle,
-        fuelType,
-        isRoundTrip
-      );
-      
-      // Get fuel prices
       const fuelPrice = await getFuelPrice(fuelType);
       
-      // Calculate distance and duration with round trip factor
-      let distance = routeDetails.distance;
-      let duration = routeDetails.duration;
+      let distance = distanceMeters;
+      let duration = durationSeconds;
       
-      // Apply round trip multiplier
       if (isRoundTrip) {
         distance *= 2;
         duration *= 2;
       }
       
-      // Calculate fuel consumption based on adjusted distance
-      const fuelConsumption = calculateFuelConsumption(
-        distance, 
-        vehicle, 
-        fuelType
-      );
-      
-      // Calculate total costs
+      const fuelConsumption = calculateFuelConsumption(distance, vehicle, fuelType);
       const fuelCost = fuelConsumption * fuelPrice;
-      const tollCost = tolls.totalFee || 0;
-      
+
       setResults({
-        distance: distance,
-        duration: duration,
+        distance,
+        duration,
         fuelCost,
-        tollCost,
-        totalCost: fuelCost + tollCost,
+        tollCost: 0,
+        totalCost: fuelCost,
         fuelConsumption,
         fuelPrice,
         isRoundTrip,
         passengerCount,
         tollData: {
-          totalFee: tolls.totalFee || 0,
-          stations: (tolls.stations || []).map(station => ({
-            name: station.name || '',
-            fee: station.fee || 0,
-            location: {
-              lat: station.location?.lat || 0,
-              lon: station.location?.lon || 0
-            }
-          }))
+          totalFee: 0,
+          stations: []
         }
       });
       
-      // Track successful calculation
       trackEvent('calculation_complete', {
-        distance: distance,
-        duration: duration,
-        total_cost: fuelCost + tollCost
+        distance,
+        duration,
+        total_cost: fuelCost
       });
       
     } catch (error) {
       console.error('Feil ved beregning av kostnader:', error);
       alert('Det oppstod en feil ved beregning av kostnader. Vennligst prøv igjen.');
       
-      // Track error
       trackEvent('calculation_error', {
         error: (error as Error).message
       });
     } finally {
       setIsCalculating(false);
-      setFormChanged(false); // Reset form changed flag after calculation
+      setFormChanged(false);
     }
   };
 
@@ -227,55 +185,51 @@ export default function Home() {
       <div className={styles.container}>
         <h1 className={styles.title}>{t('main.title')}</h1>
         
-        <div className={styles.grid}>
-          <div className={styles.formContainer}>
-            <RouteSelector 
-              origin={origin} 
-              destination={destination}
-              setOrigin={handleSetOrigin}
-              setDestination={handleSetDestination}
+        <div className={styles.formContainer}>
+          <RouteSelector 
+            origin={origin} 
+            destination={destination}
+            setOrigin={handleSetOrigin}
+            setDestination={handleSetDestination}
+          />
+          
+          <StopList 
+            stops={stops} 
+            setStops={handleSetStops} 
+          />
+
+          <div className={styles.distanceInputGroup}>
+            <label htmlFor="distance">{t('route.distance')}</label>
+            <input
+              id="distance"
+              type="number"
+              min="0"
+              step="1"
+              className={styles.distanceInput}
+              value={distanceKm}
+              onChange={(e) => handleDistanceChange(e.target.value)}
+              placeholder={t('route.distancePlaceholder')}
             />
-            
-            <StopList 
-              stops={stops} 
-              setStops={handleSetStops} 
-            />
-            
-            <VehicleSelector
-              vehicle={vehicle}
-              fuelType={fuelType}
-              setVehicle={handleVehicleChange}
-              setFuelType={handleFuelTypeChange}
-              isRoundTrip={isRoundTrip}
-              setIsRoundTrip={handleRoundTripChange}
-              passengerCount={passengerCount}
-              setPassengerCount={handlePassengerCountChange}
-            />
-            
-            <button 
-              onClick={calculateCosts}
-              disabled={isCalculating || !origin || !destination || !formChanged}
-              className={styles.calculateButton}
-            >
-              {isCalculating ? t('main.calculating') : t('main.calculate')}
-            </button>
           </div>
           
-          <div className={styles.mapContainer}>
-            <Map 
-              routeGeometry={routeData?.geometry}
-              origin={origin ? {
-                longitude: origin.lon,
-                latitude: origin.lat
-              } : undefined}
-              destination={destination ? {
-                longitude: destination.lon,
-                latitude: destination.lat
-              } : undefined}
-              stops={stops}
-              tollStations={results?.tollData?.stations}
-            />
-          </div>
+          <VehicleSelector
+            vehicle={vehicle}
+            fuelType={fuelType}
+            setVehicle={handleVehicleChange}
+            setFuelType={handleFuelTypeChange}
+            isRoundTrip={isRoundTrip}
+            setIsRoundTrip={handleRoundTripChange}
+            passengerCount={passengerCount}
+            setPassengerCount={handlePassengerCountChange}
+          />
+          
+          <button 
+            onClick={calculateCosts}
+            disabled={isCalculating || !origin || !destination || distanceKm === '' || distanceKm <= 0 || !formChanged}
+            className={styles.calculateButton}
+          >
+            {isCalculating ? t('main.calculating') : t('main.calculate')}
+          </button>
         </div>
         
         <section className={styles.contentSection}>
@@ -310,23 +264,15 @@ export default function Home() {
           stops={stops}
         />}
 
-        {/* First show calculator and main content sections */}
-        <div className={styles.calculator}>
-          {/* Calculator code */}
-        </div>
-
-        {/* Add this BEFORE any ad units */}
         <div className={styles.infoSection}>
           <h2 className={styles.infoTitle}>{t('main.about.title')}</h2>
           <div className={styles.infoContent}>
             <p>{t('main.about.paragraph1')}</p>
             <p>{t('main.about.paragraph2')}</p>
             <p>{t('main.about.paragraph3')}</p>
-            {/* More content here */}
           </div>
         </div>
 
-        {/* THEN show ad placement */}
         {isClient && (
           <AdBanner 
             adClient="ca-pub-7726641596892047"
@@ -334,18 +280,7 @@ export default function Home() {
             className={styles.resultsAd}
           />
         )}
-
-        {/* Comment out additional ad units during verification process */}
-        {/* contentReady && (
-          <AdBanner 
-            adClient="ca-pub-7726641596892047"
-            adSlot="..."
-            adFormat="rectangle"
-            className={styles.mainAd}
-          />
-        ) */}
         
-        {/* SEO-friendly content - updated with translations */}
         <section className={styles.infoSection}>
           <h2>{t('main.seo.heading1')}</h2>
           <p>
@@ -404,7 +339,6 @@ export default function Home() {
           </p>
         </section>
 
-        {/* Add this section after your calculator functionality */}
         <div className={styles.infoSection}>
           <h2 className={styles.infoTitle}>{t('main.about.title')}</h2>
           
