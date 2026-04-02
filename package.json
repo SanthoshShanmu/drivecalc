@@ -1,1 +1,11 @@
-{\n  "name": "drivecalc",\n  "version": "1.0.0",\n  "description": "A simple driving calculator",\n  "main": "index.js",\n  "scripts": {\n    "test": "echo 'Error: no test specified' && exit 1"\n  },\n  // Removed Mapbox libraries\n  "dependencies": {\n    // Other dependencies here\n    "some-other-lib": "^1.0.0"\n  },\n  "devDependencies": {\n    // Other dev dependencies\n  }\n}
+{
+  "name": "drivecalc",
+  "version": "1.0.0",
+  "description": "A simple driving calculator",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo 'Error: no test specified' && exit 1"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
