@@ -1,6 +1,6 @@
 # DriveCalc - Norwegian Driving Cost Calculator
 
-DriveCalc is a web application that helps you calculate driving costs in Norway. It provides accurate estimates for fuel consumption, toll expenses, and total travel costs between locations.
+DriveCalc is a web application that helps you calculate driving costs in Norway. It provides accurate estimates for fuel consumption and total travel costs between locations.
 
 ## Features
 
@@ -22,7 +22,9 @@ DriveCalc is a web application that helps you calculate driving costs in Norway.
 
 - [Next.js 15](https://nextjs.org/) - React framework
 - [React 19](https://react.dev/) - UI library
-- [Mapbox GL](https://www.mapbox.com/) - Interactive maps
+- [Leaflet](https://leafletjs.com/) + [react-leaflet](https://react-leaflet.js.org/) - Free interactive maps using OpenStreetMap tiles
+- [Nominatim](https://nominatim.org/) - Free geocoding and location search (OpenStreetMap)
+- [OSRM](https://project-osrm.org/) - Free open-source routing (distance & duration)
 - [Axios](https://axios-http.com/) - HTTP client for API requests
 - [TailwindCSS 4](https://tailwindcss.com/) - CSS framework
 - [TypeScript](https://www.typescriptlang.org/) - Type safety
@@ -33,8 +35,7 @@ DriveCalc is a web application that helps you calculate driving costs in Norway.
 ### Prerequisites
 
 - Node.js (v18 or newer)
-- A Mapbox API key
-- A Bompengekalkulator API key
+- No API keys required — all map, geocoding and routing services are free and open-source
 
 ### Installation
 
@@ -49,13 +50,7 @@ cd drivecalc
 npm install
 ```
 
-3. Create a `.env.local` file in the root directory with your Mapbox API key and BompengeAPI key:
-```
-NEXT_PUBLIC_MAPBOX_API_KEY=your_mapbox_api_key
-NEXT_PUBLIC_BOMPENGE_API_KEY=your_bompenge_api_key
-```
-
-4. Run the development server:
+3. Run the development server:
 ```bash
 npm run dev
 ```
@@ -64,10 +59,11 @@ npm run dev
 
 ## Usage
 
-1. Enter your origin and destination locations
-2. Select your vehicle type and fuel type
-3. View the calculated route on the map
-4. See the detailed breakdown of costs including:
+1. Type your origin and destination — autocomplete suggestions are powered by OpenStreetMap (free)
+2. Optionally add stops along the route
+3. Select your vehicle type and fuel type
+4. Click **Calculate** to get the route distance and duration from the free OSRM routing engine
+5. See the detailed breakdown of costs including:
    - Fuel consumption and cost
    - Toll expenses
    - Total travel cost
@@ -107,7 +103,6 @@ drivecalc/
 │   │   ├── LanguageSwitcher.tsx # Language context initializer
 │   │   ├── LanguageToggle.tsx # Language toggle UI component
 │   │   ├── LanguageToggleClient.tsx # Client-side language toggle
-│   │   ├── Map.tsx            # Mapbox implementation with route display
 │   │   ├── RouteSelector.tsx  # Origin/destination selector
 │   │   ├── StopList.tsx       # Intermediate stops manager
 │   │   ├── ThemeToggle.tsx    # Dark/light mode toggle
@@ -117,7 +112,7 @@ drivecalc/
 │   ├── lib/                   # Utility functions
 │   │   ├── analytics.ts       # Google Analytics integration
 │   │   ├── fuel.ts            # Fuel calculation utilities
-│   │   ├── mapbox.ts          # Mapbox integration
+│   │   ├── geocoding.ts       # Free geocoding (Nominatim) + routing (OSRM)
 │   │   └── tolls.ts           # Toll calculation utilities
 │   └── types/                 # TypeScript type definitions
 │       └── locations.ts       # Types for locations and routes

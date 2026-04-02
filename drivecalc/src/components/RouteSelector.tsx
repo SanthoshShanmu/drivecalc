@@ -3,10 +3,9 @@
 import { useState, useEffect, useRef } from 'react';
 import styles from './RouteSelector.module.css';
 import { LocationSuggestion } from '@/types/locations';
-import { searchLocations, retrieveLocationDetails } from '@/lib/mapbox';
+import { searchLocations } from '@/lib/geocoding';
 import { useLanguage } from '@/context/LanguageContext';
 
-// Update props to use LocationSuggestion objects
 type RouteSelectorProps = {
   origin: LocationSuggestion | null;
   destination: LocationSuggestion | null;
@@ -21,169 +20,83 @@ export default function RouteSelector({
   setDestination
 }: RouteSelectorProps) {
   const { t } = useLanguage();
-  
-  // Use the place_name property instead of name for display
-  const [originInput, setOriginInput] = useState(origin?.place_name || '');
-  const [destinationInput, setDestinationInput] = useState(destination?.place_name || '');
-  
+
+  const [originInput, setOriginInput] = useState(origin?.place_name || origin?.name || '');
+  const [destinationInput, setDestinationInput] = useState(destination?.place_name || destination?.name || '');
+
   const [originSuggestions, setOriginSuggestions] = useState<LocationSuggestion[]>([]);
   const [destinationSuggestions, setDestinationSuggestions] = useState<LocationSuggestion[]>([]);
-  
+
   const [isLoadingOrigin, setIsLoadingOrigin] = useState(false);
   const [isLoadingDestination, setIsLoadingDestination] = useState(false);
-  
-  const originRef = useRef<HTMLInputElement>(null);
-  const destinationRef = useRef<HTMLInputElement>(null);
-  
+
   const originClickRef = useRef(false);
   const destinationClickRef = useRef(false);
+  const originRef = useRef<HTMLInputElement>(null);
+  const destinationRef = useRef<HTMLInputElement>(null);
 
-  // Update effect to compare with origin?.place_name
   useEffect(() => {
-    const delaySearch = setTimeout(async () => {
-      if (originInput && originInput !== origin?.place_name) {
+    setOriginInput(origin?.place_name || origin?.name || '');
+  }, [origin]);
+
+  useEffect(() => {
+    setDestinationInput(destination?.place_name || destination?.name || '');
+  }, [destination]);
+
+  // Debounced origin search
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      if (originInput && originInput !== (origin?.place_name || origin?.name)) {
         setIsLoadingOrigin(true);
         try {
-          const suggestions = await searchLocations(originInput);
-          setOriginSuggestions(suggestions);
-        } catch (error) {
-          console.error('Error searching origin:', error);
+          const results = await searchLocations(originInput);
+          setOriginSuggestions(results);
+        } catch (err) {
+          console.error('Origin search error:', err);
         } finally {
           setIsLoadingOrigin(false);
         }
       } else if (!originInput) {
         setOriginSuggestions([]);
       }
-    }, 300);
-    
-    return () => clearTimeout(delaySearch);
+    }, 350);
+    return () => clearTimeout(timer);
   }, [originInput, origin]);
-  
-  // Update effect to compare with destination?.place_name
+
+  // Debounced destination search
   useEffect(() => {
-    const delaySearch = setTimeout(async () => {
-      if (destinationInput && destinationInput !== destination?.place_name) {
+    const timer = setTimeout(async () => {
+      if (destinationInput && destinationInput !== (destination?.place_name || destination?.name)) {
         setIsLoadingDestination(true);
         try {
-          const suggestions = await searchLocations(destinationInput);
-          setDestinationSuggestions(suggestions);
-        } catch (error) {
-          console.error('Error searching destination:', error);
+          const results = await searchLocations(destinationInput);
+          setDestinationSuggestions(results);
+        } catch (err) {
+          console.error('Destination search error:', err);
         } finally {
           setIsLoadingDestination(false);
         }
       } else if (!destinationInput) {
         setDestinationSuggestions([]);
       }
-    }, 300);
-    
-    return () => clearTimeout(delaySearch);
+    }, 350);
+    return () => clearTimeout(timer);
   }, [destinationInput, destination]);
 
-  // Update to handle string | undefined
-  const handleOriginSelect = async (suggestion: LocationSuggestion | string | undefined) => {
-    if (!suggestion) {
-      // Handle undefined
-      setOriginInput('');
-      return;
-    }
-    
-    if (typeof suggestion === 'string') {
-      // Handle string
-      setOriginInput(suggestion);
-      // You might want to search for this string to get a LocationSuggestion
-      return;
-    }
-    
-    // Handle LocationSuggestion object
+  const handleOriginSelect = (suggestion: LocationSuggestion) => {
+    setOrigin(suggestion);
     setOriginInput(suggestion.place_name || suggestion.name);
-    setIsLoadingOrigin(true);
-    
-    try {
-      // Ensure we have coordinates before setting the origin
-      if (suggestion.lat === null || suggestion.lon === null) {
-        if (suggestion.id) {
-          const details = await retrieveLocationDetails(suggestion.id);
-          if (details) {
-            setOrigin({
-              ...suggestion,
-              lat: details.lat,
-              lon: details.lon
-            });
-          } else {
-            throw new Error(`Kunne ikke hente detaljer for ${suggestion.name}`);
-          }
-        } else {
-          throw new Error(`Mangler ID for ${suggestion.name}`);
-        }
-      } else {
-        // Already has coordinates
-        setOrigin(suggestion);
-      }
-    } catch (error) {
-      console.error("Error retrieving location details:", error);
-      setOrigin(suggestion);
-    } finally {
-      setIsLoadingOrigin(false);
-      setOriginSuggestions([]);
-      originClickRef.current = true;
-      if (originRef.current) {
-        originRef.current.blur();
-      }
-    }
+    setOriginSuggestions([]);
+    originClickRef.current = true;
+    originRef.current?.blur();
   };
-  
-  // Update to handle string | undefined
-  const handleDestinationSelect = async (suggestion: LocationSuggestion | string | undefined) => {
-    if (!suggestion) {
-      // Handle undefined
-      setDestinationInput('');
-      return;
-    }
-    
-    if (typeof suggestion === 'string') {
-      // Handle string
-      setDestinationInput(suggestion);
-      // You might want to search for this string to get a LocationSuggestion
-      return;
-    }
-    
-    // Handle LocationSuggestion object
+
+  const handleDestinationSelect = (suggestion: LocationSuggestion) => {
+    setDestination(suggestion);
     setDestinationInput(suggestion.place_name || suggestion.name);
-    setIsLoadingDestination(true);
-    
-    try {
-      // Ensure we have coordinates before setting the destination
-      if (suggestion.lat === null || suggestion.lon === null) {
-        if (suggestion.id) {
-          const details = await retrieveLocationDetails(suggestion.id);
-          if (details) {
-            setDestination({
-              ...suggestion,
-              lat: details.lat,
-              lon: details.lon
-            });
-          } else {
-            throw new Error(`Kunne ikke hente detaljer for ${suggestion.name}`);
-          }
-        } else {
-          throw new Error(`Mangler ID for ${suggestion.name}`);
-        }
-      } else {
-        // Already has coordinates
-        setDestination(suggestion);
-      }
-    } catch (error) {
-      console.error("Error retrieving location details:", error);
-      setDestination(suggestion);
-    } finally {
-      setIsLoadingDestination(false);
-      setDestinationSuggestions([]);
-      destinationClickRef.current = true;
-      if (destinationRef.current) {
-        destinationRef.current.blur();
-      }
-    }
+    setDestinationSuggestions([]);
+    destinationClickRef.current = true;
+    destinationRef.current?.blur();
   };
 
   return (
@@ -200,40 +113,37 @@ export default function RouteSelector({
             onChange={(e) => setOriginInput(e.target.value)}
             placeholder={t('route.fromPlaceholder')}
             onFocus={() => {
-              if (!originClickRef.current && originInput && originInput !== origin?.place_name) {
+              if (!originClickRef.current && originInput) {
                 searchLocations(originInput).then(setOriginSuggestions);
               }
             }}
             onBlur={() => {
               setTimeout(() => {
-                if (!originClickRef.current) {
-                  setOriginSuggestions([]);
-                }
+                if (!originClickRef.current) setOriginSuggestions([]);
                 originClickRef.current = false;
               }, 200);
             }}
           />
           {isLoadingOrigin && <div className={styles.spinner} />}
-          
           {originSuggestions.length > 0 && (
             <div className={styles.resultsContainer}>
-              {originSuggestions.map((suggestion, index) => (
+              {originSuggestions.map((s, i) => (
                 <div
-                  key={index}
+                  key={i}
                   className={styles.resultItem}
                   onMouseDown={() => {
                     originClickRef.current = true;
-                    handleOriginSelect(suggestion);
+                    handleOriginSelect(s);
                   }}
                 >
-                  {suggestion.place_name}
+                  {s.place_name}
                 </div>
               ))}
             </div>
           )}
         </div>
       </div>
-      
+
       <div className={styles.inputGroup}>
         <label htmlFor="destination">{t('route.to')}</label>
         <div className={styles.autocompleteContainer}>
@@ -246,33 +156,30 @@ export default function RouteSelector({
             onChange={(e) => setDestinationInput(e.target.value)}
             placeholder={t('route.toPlaceholder')}
             onFocus={() => {
-              if (!destinationClickRef.current && destinationInput && destinationInput !== destination?.place_name) {
+              if (!destinationClickRef.current && destinationInput) {
                 searchLocations(destinationInput).then(setDestinationSuggestions);
               }
             }}
             onBlur={() => {
               setTimeout(() => {
-                if (!destinationClickRef.current) {
-                  setDestinationSuggestions([]);
-                }
+                if (!destinationClickRef.current) setDestinationSuggestions([]);
                 destinationClickRef.current = false;
               }, 200);
             }}
           />
           {isLoadingDestination && <div className={styles.spinner} />}
-          
           {destinationSuggestions.length > 0 && (
             <div className={styles.resultsContainer}>
-              {destinationSuggestions.map((suggestion, index) => (
+              {destinationSuggestions.map((s, i) => (
                 <div
-                  key={index}
+                  key={i}
                   className={styles.resultItem}
                   onMouseDown={() => {
                     destinationClickRef.current = true;
-                    handleDestinationSelect(suggestion);
+                    handleDestinationSelect(s);
                   }}
                 >
-                  {suggestion.place_name}
+                  {s.place_name}
                 </div>
               ))}
             </div>

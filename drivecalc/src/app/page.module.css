@@ -47,14 +47,14 @@
 
 @media (max-width: 767px) {
   .mapContainer {
-    height: 300px; /* Smaller height on mobile */
+    height: 300px;
     margin-bottom: 1rem;
   }
-  
+
   .main {
     padding: 1rem 0.75rem;
   }
-  
+
   .title {
     font-size: 1.5rem;
     margin-bottom: 1.5rem;
@@ -173,23 +173,21 @@
     display: flex;
     flex-direction: column;
   }
-  
+
   .mapContainer {
-    order: -1; /* This moves the map to the top of the flex container */
+    order: -1;
     margin-bottom: 1.5rem;
-    height: 300px; /* Set an appropriate height for mobile */
-    width: 100%;
   }
-  
+
   .formContainer {
     order: 1;
   }
-  
+
   .calculateButton {
     margin-top: 1rem;
     width: 100%;
   }
-  
+
   /* SEO content adjustments for mobile */
   .featuresGrid {
     grid-template-columns: 1fr;

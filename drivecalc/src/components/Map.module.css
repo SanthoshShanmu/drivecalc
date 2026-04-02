@@ -18,27 +18,11 @@
   height: 100%;
 }
 
-.placeholder {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: var(--secondary-background);
-  color: var(--muted);
-  text-align: center;
-  padding: 2rem;
-  font-size: 1rem;
-}
-
 .controls {
   position: absolute;
   bottom: 10px;
   left: 10px;
-  z-index: 1;
+  z-index: 1000;
   background-color: var(--background);
   border-radius: 4px;
   padding: 8px;
@@ -58,26 +42,27 @@
   height: 12px;
   border-radius: 50%;
   margin-right: 8px;
+  flex-shrink: 0;
 }
 
 .originMarker {
-  background-color: var(--origin-marker);
+  background-color: #33A532;
 }
 
 .destinationMarker {
-  background-color: var(--destination-marker);
+  background-color: #E63946;
 }
 
 .tollMarker {
-  background-color: var(--toll-marker);
+  background-color: #ffc107;
 }
 
 .stopMarker {
-  background-color: #9C27B0; /* Purple color for stops */
+  background-color: #9C27B0;
 }
 
 @media (prefers-color-scheme: dark) {
   .stopMarker {
-    background-color: #BA68C8; /* Slightly lighter purple for dark mode */
+    background-color: #BA68C8;
   }
 }
